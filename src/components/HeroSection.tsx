@@ -21,12 +21,12 @@ const HeroSection = () => (
           </Button>
         </a>
         <a href="tel:+918300003829">
-          <Button size="lg" variant="outline" className="border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/10 gap-2">
+          <Button size="lg" className="bg-primary-foreground/20 border border-primary-foreground/60 text-primary-foreground hover:bg-primary-foreground/30 gap-2 backdrop-blur-sm">
             <Phone className="w-4 h-4" /> Call Now
           </Button>
         </a>
         <a href="https://wa.me/918300003829?text=Hi%2C%20I%20want%20to%20book%20a%20room%20at%20Malar%20Park" target="_blank" rel="noopener noreferrer">
-          <Button size="lg" variant="outline" className="border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/10 gap-2">
+          <Button size="lg" className="bg-primary-foreground/20 border border-primary-foreground/60 text-primary-foreground hover:bg-primary-foreground/30 gap-2 backdrop-blur-sm">
             <MessageCircle className="w-4 h-4" /> WhatsApp Enquiry
           </Button>
         </a>

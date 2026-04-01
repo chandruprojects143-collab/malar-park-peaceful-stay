@@ -46,12 +46,12 @@ const ContactSection = () => (
             </Button>
           </a>
           <a href="https://wa.me/918300003829" target="_blank" rel="noopener noreferrer">
-            <Button size="lg" variant="outline" className="border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/10 gap-2 w-full sm:w-auto">
+            <Button size="lg" className="bg-primary-foreground/20 border border-primary-foreground/60 text-primary-foreground hover:bg-primary-foreground/30 gap-2 w-full sm:w-auto backdrop-blur-sm">
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </Button>
           </a>
           <a href="https://www.google.com/maps/dir/?api=1&destination=12.2309,79.0677" target="_blank" rel="noopener noreferrer">
-            <Button size="lg" variant="outline" className="border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/10 gap-2 w-full sm:w-auto">
+            <Button size="lg" className="bg-primary-foreground/20 border border-primary-foreground/60 text-primary-foreground hover:bg-primary-foreground/30 gap-2 w-full sm:w-auto backdrop-blur-sm">
               <Navigation className="w-4 h-4" /> Get Directions
             </Button>
           </a>

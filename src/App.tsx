@@ -3,8 +3,19 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AdminAuthProvider } from "@/hooks/useAdminAuth";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import AdminLogin from "./pages/admin/AdminLogin.tsx";
+import AdminLayout from "./pages/admin/AdminLayout.tsx";
+import Dashboard from "./pages/admin/Dashboard.tsx";
+import RoomStatus from "./pages/admin/RoomStatus.tsx";
+import DailyCollection from "./pages/admin/DailyCollection.tsx";
+import ExpenseManager from "./pages/admin/ExpenseManager.tsx";
+import StaffManagement from "./pages/admin/StaffManagement.tsx";
+import LaundryRegister from "./pages/admin/LaundryRegister.tsx";
+import UtilityTracker from "./pages/admin/UtilityTracker.tsx";
+import Reports from "./pages/admin/Reports.tsx";
 
 const queryClient = new QueryClient();
 
@@ -13,13 +24,25 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AdminAuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="rooms" element={<RoomStatus />} />
+              <Route path="collection" element={<DailyCollection />} />
+              <Route path="expenses" element={<ExpenseManager />} />
+              <Route path="staff" element={<StaffManagement />} />
+              <Route path="laundry" element={<LaundryRegister />} />
+              <Route path="utilities" element={<UtilityTracker />} />
+              <Route path="reports" element={<Reports />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AdminAuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

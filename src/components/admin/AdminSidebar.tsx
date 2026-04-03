@@ -1,5 +1,6 @@
 import {
-  LayoutDashboard, BedDouble, IndianRupee, Receipt, Users, Shirt, Zap, BarChart3, LogOut, ArrowLeft
+  LayoutDashboard, BedDouble, IndianRupee, Receipt, Users, Shirt, Zap, BarChart3,
+  LogOut, ArrowLeft, Wrench, CreditCard, ClipboardList, Bell
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
@@ -8,15 +9,19 @@ import {
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,
 } from '@/components/ui/sidebar';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import { Button } from '@/components/ui/button';
 
 const menuItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, module: 'dashboard' },
+  { title: 'Reception', url: '/admin/reception', icon: ClipboardList, module: 'reception' },
   { title: 'Room Status', url: '/admin/rooms', icon: BedDouble, module: 'rooms' },
-  { title: 'Daily Collection', url: '/admin/collection', icon: IndianRupee, module: 'collection' },
+  { title: 'Room Prices', url: '/admin/room-prices', icon: CreditCard, module: 'room-prices' },
+  { title: 'Collection', url: '/admin/collection', icon: IndianRupee, module: 'collection' },
+  { title: 'Laundry', url: '/admin/laundry', icon: Shirt, module: 'laundry' },
+  { title: 'Maintenance', url: '/admin/maintenance', icon: Wrench, module: 'maintenance' },
+  { title: 'Staff Payments', url: '/admin/staff-payments', icon: Users, module: 'staff-payments' },
+  { title: 'Bills', url: '/admin/bills', icon: Bell, module: 'bills' },
   { title: 'Expenses', url: '/admin/expenses', icon: Receipt, module: 'expenses' },
   { title: 'Staff', url: '/admin/staff', icon: Users, module: 'staff' },
-  { title: 'Laundry', url: '/admin/laundry', icon: Shirt, module: 'laundry' },
   { title: 'Utilities', url: '/admin/utilities', icon: Zap, module: 'utilities' },
   { title: 'Reports', url: '/admin/reports', icon: BarChart3, module: 'reports' },
 ];

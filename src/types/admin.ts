@@ -10,11 +10,15 @@ export type RoomStatus = 'available' | 'occupied' | 'cleaning';
 export interface Room {
   id: string;
   number: string;
-  type: 'Deluxe' | 'Family' | 'Suite';
+  type: string;
   status: RoomStatus;
   guestName?: string;
+  checkInDate?: string;
   checkoutDate?: string;
   rate: number;
+  advance?: number;
+  balance?: number;
+  paymentMethod?: 'Cash' | 'UPI' | 'Card';
 }
 
 export type ExpenseCategory =
@@ -104,4 +108,51 @@ export interface CollectionEntry {
   onlineBooking: number;
   extraCharges: number;
   laundryIncome: number;
+}
+
+// Reception booking entry
+export interface BookingEntry {
+  id: string;
+  roomNumber: string;
+  guestName: string;
+  checkInDate: string;
+  checkoutDate: string;
+  roomPrice: number;
+  advance: number;
+  balance: number;
+  paymentMethod: 'Cash' | 'UPI' | 'Card';
+  date: string;
+}
+
+// Staff daily payment
+export interface StaffPayment {
+  id: string;
+  staffName: string;
+  workDone: string;
+  amount: number;
+  date: string;
+  paymentType: 'Cash' | 'UPI' | 'Bank Transfer';
+}
+
+// Maintenance activity
+export type ActivityFrequency = 'Daily' | 'Weekly' | 'Monthly' | 'Every 3 Months';
+
+export interface MaintenanceActivity {
+  id: string;
+  name: string;
+  frequency: ActivityFrequency;
+  assignedStaff: string;
+  lastCompleted: string;
+}
+
+// Bill management
+export type BillPaymentStatus = 'Paid' | 'Pending' | 'Due Soon';
+
+export interface BillEntry {
+  id: string;
+  billType: string;
+  amount: number;
+  dueDate: string;
+  paid: boolean;
+  paymentDate?: string;
 }

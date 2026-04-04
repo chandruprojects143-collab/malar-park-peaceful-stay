@@ -1,8 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Room, BookingEntry, LaundryEntry, StaffPayment, MaintenanceActivity, BillEntry } from '@/types/admin';
-import { BedDouble, IndianRupee, Shirt, Wrench, Receipt, Bell, AlertTriangle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import {
+  BedDouble, IndianRupee, Shirt, Wrench, Receipt, Bell, AlertTriangle,
+  ClipboardList, CreditCard, Zap, BarChart3, Users, LayoutDashboard
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 const today = new Date().toISOString().split('T')[0];
 const currentMonth = today.substring(0, 7);
@@ -19,7 +23,24 @@ const getActivityStatus = (lastCompleted: string, frequency: string) => {
   return 'ok';
 };
 
+const moduleItems = [
+  { title: 'Reception', url: '/admin/reception', icon: ClipboardList, module: 'reception', color: 'text-blue-600', bg: 'bg-blue-50' },
+  { title: 'Room Status', url: '/admin/rooms', icon: BedDouble, module: 'rooms', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  { title: 'Room Prices', url: '/admin/room-prices', icon: CreditCard, module: 'room-prices', color: 'text-violet-600', bg: 'bg-violet-50' },
+  { title: 'Collection', url: '/admin/collection', icon: IndianRupee, module: 'collection', color: 'text-green-600', bg: 'bg-green-50' },
+  { title: 'Laundry', url: '/admin/laundry', icon: Shirt, module: 'laundry', color: 'text-yellow-600', bg: 'bg-yellow-50' },
+  { title: 'Maintenance', url: '/admin/maintenance', icon: Wrench, module: 'maintenance', color: 'text-orange-600', bg: 'bg-orange-50' },
+  { title: 'Staff Payments', url: '/admin/staff-payments', icon: Users, module: 'staff-payments', color: 'text-purple-600', bg: 'bg-purple-50' },
+  { title: 'Bills', url: '/admin/bills', icon: Bell, module: 'bills', color: 'text-red-600', bg: 'bg-red-50' },
+  { title: 'Expenses', url: '/admin/expenses', icon: Receipt, module: 'expenses', color: 'text-pink-600', bg: 'bg-pink-50' },
+  { title: 'Staff', url: '/admin/staff', icon: Users, module: 'staff', color: 'text-indigo-600', bg: 'bg-indigo-50' },
+  { title: 'Utilities', url: '/admin/utilities', icon: Zap, module: 'utilities', color: 'text-amber-600', bg: 'bg-amber-50' },
+  { title: 'Reports', url: '/admin/reports', icon: BarChart3, module: 'reports', color: 'text-teal-600', bg: 'bg-teal-50' },
+];
+
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const { hasAccess } = useAdminAuth();
   const [rooms] = useLocalStorage<Room[]>('malar_rooms', []);
   const [bookings] = useLocalStorage<BookingEntry[]>('malar_bookings', []);
   const [laundry] = useLocalStorage<LaundryEntry[]>('malar_laundry', []);
@@ -41,7 +62,6 @@ const Dashboard = () => {
   const pendingBills = bills.filter(b => !b.paid);
   const overdueBills = pendingBills.filter(b => new Date(b.dueDate) < new Date());
 
-  // Notifications
   const notifications: { text: string; type: 'danger' | 'warning' }[] = [];
   if (pendingLaundry > 0) notifications.push({ text: `🧺 ${pendingLaundry} laundry items pending`, type: 'warning' });
   overdueBills.forEach(b => notifications.push({ text: `🔴 ${b.billType} — ₹${b.amount.toLocaleString()} overdue`, type: 'danger' }));
@@ -57,10 +77,13 @@ const Dashboard = () => {
     { title: 'Maintenance Alerts', value: overdueActivities.length.toString(), sub: 'overdue tasks', icon: Wrench, color: 'text-orange-600' },
   ];
 
+  const visibleModules = moduleItems.filter(m => hasAccess(m.module));
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-heading font-bold">📊 Owner Dashboard</h1>
 
+      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {stats.map(s => (
           <Card key={s.title}>
@@ -77,6 +100,7 @@ const Dashboard = () => {
         ))}
       </div>
 
+      {/* Notifications */}
       {notifications.length > 0 && (
         <Card className="border-amber-200">
           <CardHeader className="pb-2">
@@ -98,6 +122,28 @@ const Dashboard = () => {
         </Card>
       )}
 
+      {/* Module Navigation Tiles */}
+      <div>
+        <h2 className="text-lg font-semibold mb-3">📁 Modules</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {visibleModules.map(m => (
+            <Card
+              key={m.url}
+              className="cursor-pointer hover:shadow-md transition-shadow border hover:border-primary/30"
+              onClick={() => navigate(m.url)}
+            >
+              <CardContent className="flex flex-col items-center justify-center py-6 gap-2">
+                <div className={`w-10 h-10 rounded-full ${m.bg} flex items-center justify-center`}>
+                  <m.icon className={`w-5 h-5 ${m.color}`} />
+                </div>
+                <span className="text-sm font-medium">{m.title}</span>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick Info */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader><CardTitle className="text-sm">Today's Bookings</CardTitle></CardHeader>

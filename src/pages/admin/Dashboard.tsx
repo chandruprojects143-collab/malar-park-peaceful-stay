@@ -3,8 +3,10 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Room, BookingEntry, LaundryEntry, StaffPayment, MaintenanceActivity, BillEntry } from '@/types/admin';
 import {
   BedDouble, IndianRupee, Shirt, Wrench, Receipt, Bell, AlertTriangle,
-  ClipboardList, CreditCard, Zap, BarChart3, Users, LayoutDashboard
+  ClipboardList, CreditCard, Zap, BarChart3, Users, LayoutDashboard, Search
 } from 'lucide-react';
+import { useState } from 'react';
+import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 

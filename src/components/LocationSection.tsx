@@ -45,6 +45,18 @@ const LocationSection = () => (
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
+          <div className="p-3 bg-muted flex justify-center">
+            <a
+              href="https://www.google.com/maps/dir/?api=1&destination=12.223030,79.055427"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
+                <Navigation className="w-4 h-4" />
+                Get Directions
+              </Button>
+            </a>
+          </div>
         </div>
       </div>
     </div>

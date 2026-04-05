@@ -21,6 +21,7 @@ import MaintenanceActivities from "./pages/admin/MaintenanceActivities.tsx";
 import BillManagement from "./pages/admin/BillManagement.tsx";
 import UtilityTracker from "./pages/admin/UtilityTracker.tsx";
 import Reports from "./pages/admin/Reports.tsx";
+import RoomPhotos from "./pages/admin/RoomPhotos.tsx";
 
 const queryClient = new QueryClient();
 

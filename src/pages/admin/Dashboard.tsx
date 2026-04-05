@@ -81,7 +81,9 @@ const Dashboard = () => {
   ];
 
   const visibleModules = moduleItems.filter(m => hasAccess(m.module));
-
+  const filteredModules = visibleModules.filter(m => 
+    m.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-heading font-bold">📊 Owner Dashboard</h1>

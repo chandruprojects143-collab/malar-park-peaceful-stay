@@ -1,4 +1,5 @@
-import { MapPin } from "lucide-react";
+import { MapPin, Navigation } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const nearbyPlaces = [
   { name: "Sri Arunachaleswarar Temple", distance: "1.5 km" },

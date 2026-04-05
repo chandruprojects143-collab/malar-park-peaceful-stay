@@ -129,9 +129,20 @@ const Dashboard = () => {
 
       {/* Module Navigation Tiles */}
       <div>
-        <h2 className="text-lg font-semibold mb-3">📁 Modules</h2>
+        <div className="flex items-center gap-3 mb-3">
+          <h2 className="text-lg font-semibold">📁 Modules</h2>
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search modules..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="pl-8 h-8 text-sm"
+            />
+          </div>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {visibleModules.map(m => (
+          {filteredModules.map(m => (
             <Card
               key={m.url}
               className="cursor-pointer hover:shadow-md transition-shadow border hover:border-primary/30"

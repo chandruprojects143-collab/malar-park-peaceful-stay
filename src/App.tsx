@@ -21,6 +21,7 @@ import MaintenanceActivities from "./pages/admin/MaintenanceActivities.tsx";
 import BillManagement from "./pages/admin/BillManagement.tsx";
 import UtilityTracker from "./pages/admin/UtilityTracker.tsx";
 import Reports from "./pages/admin/Reports.tsx";
+import RoomPhotos from "./pages/admin/RoomPhotos.tsx";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="bills" element={<BillManagement />} />
               <Route path="utilities" element={<UtilityTracker />} />
               <Route path="reports" element={<Reports />} />
+              <Route path="room-photos" element={<RoomPhotos />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

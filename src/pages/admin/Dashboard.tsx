@@ -3,7 +3,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Room, BookingEntry, LaundryEntry, StaffPayment, MaintenanceActivity, BillEntry } from '@/types/admin';
 import {
   BedDouble, IndianRupee, Shirt, Wrench, Receipt, Bell, AlertTriangle,
-  ClipboardList, CreditCard, Zap, BarChart3, Users, LayoutDashboard, Search
+  ClipboardList, CreditCard, Zap, BarChart3, Users, LayoutDashboard, Search, Camera
 } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
@@ -38,6 +38,7 @@ const moduleItems = [
   { title: 'Staff', url: '/admin/staff', icon: Users, module: 'staff', color: 'text-indigo-600', bg: 'bg-indigo-50' },
   { title: 'Utilities', url: '/admin/utilities', icon: Zap, module: 'utilities', color: 'text-amber-600', bg: 'bg-amber-50' },
   { title: 'Reports', url: '/admin/reports', icon: BarChart3, module: 'reports', color: 'text-teal-600', bg: 'bg-teal-50' },
+  { title: 'Room Photos', url: '/admin/room-photos', icon: Camera, module: 'room-photos', color: 'text-cyan-600', bg: 'bg-cyan-50' },
 ];
 
 const Dashboard = () => {

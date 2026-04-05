@@ -43,6 +43,7 @@ const moduleItems = [
 const Dashboard = () => {
   const navigate = useNavigate();
   const { hasAccess } = useAdminAuth();
+  const [searchQuery, setSearchQuery] = useState('');
   const [rooms] = useLocalStorage<Room[]>('malar_rooms', []);
   const [bookings] = useLocalStorage<BookingEntry[]>('malar_bookings', []);
   const [laundry] = useLocalStorage<LaundryEntry[]>('malar_laundry', []);

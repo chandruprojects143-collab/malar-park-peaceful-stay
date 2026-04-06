@@ -38,19 +38,20 @@ const RoomImageCarousel = ({ images, name }: { images: string[]; name: string })
       <img src={images[current]} alt={`${name} ${current + 1}`} loading="lazy" width={800} height={600} className="w-full h-56 object-cover" />
       <button
         onClick={(e) => { e.preventDefault(); setCurrent((current - 1 + images.length) % images.length); }}
-        className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/70 rounded-full p-1 hover:bg-background transition-colors"
+        className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/80 rounded-full p-2 hover:bg-background transition-colors shadow-md"
       >
-        <ChevronLeft className="w-4 h-4 text-foreground" />
+        <ChevronLeft className="w-5 h-5 text-foreground" />
       </button>
       <button
         onClick={(e) => { e.preventDefault(); setCurrent((current + 1) % images.length); }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/70 rounded-full p-1 hover:bg-background transition-colors"
+        className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/80 rounded-full p-2 hover:bg-background transition-colors shadow-md"
       >
-        <ChevronRight className="w-4 h-4 text-foreground" />
+        <ChevronRight className="w-5 h-5 text-foreground" />
       </button>
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
         {images.map((_, i) => (
-          <button key={i} onClick={(e) => { e.preventDefault(); setCurrent(i); }} className={`w-2 h-2 rounded-full transition-colors ${i === current ? 'bg-primary' : 'bg-background/60'}`} />
+          <button key={i} onClick={(e) => { e.preventDefault(); setCurrent(i); }} className={`w-3 h-3 rounded-full transition-colors ring-2 ring-background/50 ${i === current ? 'bg-primary' : 'bg-background/60'}`} />
+        ))}
         ))}
       </div>
     </div>

@@ -1,5 +1,4 @@
-import { MapPin, Navigation } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
 
 const nearbyPlaces = [
   { name: "Sri Arunachaleswarar Temple", distance: "1.5 km" },
@@ -37,7 +36,7 @@ const LocationSection = () => (
         <div className="rounded-xl overflow-hidden shadow-elegant border border-border">
           <iframe
             title="Malar Park Location"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500!2d79.055427!3d12.223030!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDEzJzIyLjkiTiA3OcKwMDMnMTkuNSJF!5e0!3m2!1sen!2sin!4v1700000000000"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3898.675!2d79.0677!3d12.2309!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDEzJzUxLjIiTiA3OcKwMDQnMDMuNyJF!5e0!3m2!1sen!2sin!4v1700000000000"
             width="100%"
             height="350"
             style={{ border: 0 }}
@@ -45,18 +44,6 @@ const LocationSection = () => (
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
-          <div className="p-3 bg-muted flex justify-center">
-            <a
-              href="https://www.google.com/maps/dir/?api=1&destination=12.223030,79.055427"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
-                <Navigation className="w-4 h-4" />
-                Get Directions
-              </Button>
-            </a>
-          </div>
         </div>
       </div>
     </div>

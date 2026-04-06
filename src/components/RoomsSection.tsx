@@ -52,7 +52,6 @@ const RoomImageCarousel = ({ images, name }: { images: string[]; name: string })
         {images.map((_, i) => (
           <button key={i} onClick={(e) => { e.preventDefault(); setCurrent(i); }} className={`w-3 h-3 rounded-full transition-colors ring-2 ring-background/50 ${i === current ? 'bg-primary' : 'bg-background/60'}`} />
         ))}
-        ))}
       </div>
     </div>
   );

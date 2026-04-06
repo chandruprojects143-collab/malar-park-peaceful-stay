@@ -3,7 +3,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Room, BookingEntry, LaundryEntry, StaffPayment, MaintenanceActivity, BillEntry } from '@/types/admin';
 import {
   BedDouble, IndianRupee, Shirt, Wrench, Receipt, Bell, AlertTriangle,
-  ClipboardList, CreditCard, Zap, BarChart3, Users, LayoutDashboard, Search, Camera
+  ClipboardList, CreditCard, Zap, BarChart3, Users, LayoutDashboard, Search, Camera, ImageIcon
 } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';

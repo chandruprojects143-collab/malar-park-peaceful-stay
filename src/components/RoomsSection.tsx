@@ -1,4 +1,5 @@
-import { Wifi, Snowflake, Tv, ShowerHead, Car, BedDouble } from "lucide-react";
+import { useState } from "react";
+import { Wifi, Snowflake, Tv, ShowerHead, Car, BedDouble, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import roomDeluxe from "@/assets/room-deluxe.jpg";
@@ -9,7 +10,7 @@ interface RoomPhoto {
   id: string;
   name: string;
   description: string;
-  image: string;
+  images: string[];
 }
 
 const amenityIcons = [
@@ -22,16 +23,44 @@ const amenityIcons = [
 ];
 
 const defaultRooms = [
-  { name: "Deluxe Room", desc: "Cozy and clean room perfect for solo travelers and couples.", img: roomDeluxe },
-  { name: "Family Room", desc: "Spacious room ideal for families with extra beds and amenities.", img: roomFamily },
-  { name: "Suite Room", desc: "Premium suite with sitting area for a luxurious yet affordable stay.", img: roomSuite },
+  { name: "Deluxe Room", desc: "Cozy and clean room perfect for solo travelers and couples.", images: [roomDeluxe] },
+  { name: "Family Room", desc: "Spacious room ideal for families with extra beds and amenities.", images: [roomFamily] },
+  { name: "Suite Room", desc: "Premium suite with sitting area for a luxurious yet affordable stay.", images: [roomSuite] },
 ];
+
+const RoomImageCarousel = ({ images, name }: { images: string[]; name: string }) => {
+  const [current, setCurrent] = useState(0);
+  if (images.length <= 1) {
+    return <img src={images[0]} alt={name} loading="lazy" width={800} height={600} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500" />;
+  }
+  return (
+    <div className="relative">
+      <img src={images[current]} alt={`${name} ${current + 1}`} loading="lazy" width={800} height={600} className="w-full h-56 object-cover" />
+      <button
+        onClick={(e) => { e.preventDefault(); setCurrent((current - 1 + images.length) % images.length); }}
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/70 rounded-full p-1 hover:bg-background transition-colors"
+      >
+        <ChevronLeft className="w-4 h-4 text-foreground" />
+      </button>
+      <button
+        onClick={(e) => { e.preventDefault(); setCurrent((current + 1) % images.length); }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/70 rounded-full p-1 hover:bg-background transition-colors"
+      >
+        <ChevronRight className="w-4 h-4 text-foreground" />
+      </button>
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+        {images.map((_, i) => (
+          <button key={i} onClick={(e) => { e.preventDefault(); setCurrent(i); }} className={`w-2 h-2 rounded-full transition-colors ${i === current ? 'bg-primary' : 'bg-background/60'}`} />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const RoomsSection = () => {
   const [customPhotos] = useLocalStorage<RoomPhoto[]>('malar_room_photos', []);
-
   const rooms = customPhotos.length > 0
-    ? customPhotos.map(p => ({ name: p.name, desc: p.description, img: p.image }))
+    ? customPhotos.map(p => ({ name: p.name, desc: p.description, images: p.images }))
     : defaultRooms;
 
   return (
@@ -47,7 +76,7 @@ const RoomsSection = () => {
           {rooms.map((room) => (
             <div key={room.name} className="bg-card rounded-xl overflow-hidden shadow-elegant border border-border group">
               <div className="overflow-hidden">
-                <img src={room.img} alt={room.name} loading="lazy" width={800} height={600} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500" />
+                <RoomImageCarousel images={room.images} name={room.name} />
               </div>
               <div className="p-6">
                 <h3 className="font-heading text-xl font-bold text-foreground mb-2">{room.name}</h3>

@@ -20,12 +20,20 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Hotel",
-      "name": "Malar Park",
-      "description": "Budget friendly premium hotel in Tiruvannamalai near Ramana Ashram and Arunachaleswarar Temple",
+      "@type": ["Hotel", "LocalBusiness", "LodgingBusiness"],
+      "@id": "https://www.malarpark.com/#hotel",
+      "name": "Malar Park Hotel",
+      "alternateName": "Malar Park",
+      "description": "Budget friendly premium hotel in Tiruvannamalai near Sri Ramana Ashram and Arunachaleswarar Temple. Clean AC/Non-AC rooms, free WiFi, parking and 24x7 reception.",
       "url": "https://www.malarpark.com",
       "telephone": "+918300003829",
       "email": "holidays@malarpark.com",
+      "image": ["https://www.malarpark.com/og-image.jpg"],
+      "priceRange": "₹1200 - ₹2500",
+      "currenciesAccepted": "INR",
+      "paymentAccepted": "Cash, UPI, Card",
+      "checkinTime": "12:00",
+      "checkoutTime": "11:00",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "1852/6, Chengam Main Road, Opp to Sri Ramanasramam",
@@ -39,13 +47,64 @@
         "latitude": "12.2309",
         "longitude": "79.0677"
       },
+      "hasMap": "https://maps.app.goo.gl/EZeSjsNZx1Tck3zY6",
       "amenityFeature": [
-        {"@type": "LocationFeatureSpecification", "name": "Free WiFi"},
-        {"@type": "LocationFeatureSpecification", "name": "Car Parking"},
-        {"@type": "LocationFeatureSpecification", "name": "24x7 Reception"},
-        {"@type": "LocationFeatureSpecification", "name": "Lift Access"}
+        {"@type": "LocationFeatureSpecification", "name": "Free WiFi", "value": true},
+        {"@type": "LocationFeatureSpecification", "name": "Free Parking", "value": true},
+        {"@type": "LocationFeatureSpecification", "name": "24x7 Reception", "value": true},
+        {"@type": "LocationFeatureSpecification", "name": "Lift Access", "value": true},
+        {"@type": "LocationFeatureSpecification", "name": "Air Conditioning", "value": true},
+        {"@type": "LocationFeatureSpecification", "name": "Hot Water", "value": true},
+        {"@type": "LocationFeatureSpecification", "name": "LED TV", "value": true}
       ],
-      "priceRange": "$$"
+      "starRating": {"@type": "Rating", "ratingValue": "3"},
+      "aggregateRating": {"@type": "AggregateRating", "ratingValue": "4.5", "reviewCount": "120"},
+      "makesOffer": [
+        {
+          "@type": "Offer",
+          "name": "Deluxe Room",
+          "description": "Cozy and clean room perfect for solo travelers and couples.",
+          "price": "1200",
+          "priceCurrency": "INR",
+          "availability": "https://schema.org/InStock",
+          "url": "https://www.malarpark.com/#rooms",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": "1200",
+            "priceCurrency": "INR",
+            "unitCode": "DAY"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Family Room",
+          "description": "Spacious room ideal for families with extra beds and amenities.",
+          "price": "1800",
+          "priceCurrency": "INR",
+          "availability": "https://schema.org/InStock",
+          "url": "https://www.malarpark.com/#rooms"
+        },
+        {
+          "@type": "Offer",
+          "name": "Suite Room",
+          "description": "Premium suite with sitting area for a luxurious yet affordable stay.",
+          "price": "2500",
+          "priceCurrency": "INR",
+          "availability": "https://schema.org/InStock",
+          "url": "https://www.malarpark.com/#rooms"
+        }
+      ],
+      "potentialAction": {
+        "@type": "ReserveAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.malarpark.com/#booking",
+          "inLanguage": "en-IN",
+          "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"]
+        },
+        "result": {"@type": "LodgingReservation", "name": "Room booking"}
+      },
+      "sameAs": ["https://maps.app.goo.gl/EZeSjsNZx1Tck3zY6"]
     }
     </script>
     <meta property="og:title" content="Malar Park Hotel – Comfortable Stay Near Arunachala, Tiruvannamalai">

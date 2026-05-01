@@ -37,20 +37,29 @@ const RoomImageCarousel = ({ images, name }: { images: string[]; name: string })
     <div className="relative">
       <img src={images[current]} alt={`${name} ${current + 1}`} loading="lazy" width={800} height={600} className="w-full h-56 object-cover" />
       <button
+        aria-label="Previous image"
         onClick={(e) => { e.preventDefault(); setCurrent((current - 1 + images.length) % images.length); }}
-        className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/80 rounded-full p-2 hover:bg-background transition-colors shadow-md"
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/90 rounded-full h-11 w-11 flex items-center justify-center hover:bg-background transition-colors shadow-md active:scale-95"
       >
-        <ChevronLeft className="w-5 h-5 text-foreground" />
+        <ChevronLeft className="w-6 h-6 text-foreground" />
       </button>
       <button
+        aria-label="Next image"
         onClick={(e) => { e.preventDefault(); setCurrent((current + 1) % images.length); }}
-        className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/80 rounded-full p-2 hover:bg-background transition-colors shadow-md"
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/90 rounded-full h-11 w-11 flex items-center justify-center hover:bg-background transition-colors shadow-md active:scale-95"
       >
-        <ChevronRight className="w-5 h-5 text-foreground" />
+        <ChevronRight className="w-6 h-6 text-foreground" />
       </button>
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-1 py-2">
         {images.map((_, i) => (
-          <button key={i} onClick={(e) => { e.preventDefault(); setCurrent(i); }} className={`w-3 h-3 rounded-full transition-colors ring-2 ring-background/50 ${i === current ? 'bg-primary' : 'bg-background/60'}`} />
+          <button
+            key={i}
+            aria-label={`Go to image ${i + 1}`}
+            onClick={(e) => { e.preventDefault(); setCurrent(i); }}
+            className="h-9 w-9 flex items-center justify-center"
+          >
+            <span className={`block rounded-full transition-all ring-2 ring-background/60 ${i === current ? 'bg-primary w-3.5 h-3.5' : 'bg-background/80 w-3 h-3'}`} />
+          </button>
         ))}
       </div>
     </div>

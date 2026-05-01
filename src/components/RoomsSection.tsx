@@ -23,7 +23,7 @@ const amenityIcons = [
 ];
 
 const defaultRooms = [
-  { name: "Deluxe Room", desc: "Cozy and clean room perfect for solo travelers and couples.", images: [roomDeluxe] },
+  { name: "Deluxe Room", desc: "Cozy and clean room perfect for solo travelers and couples.", images: [roomDeluxe, roomFamily, roomSuite] },
   { name: "Family Room", desc: "Spacious room ideal for families with extra beds and amenities.", images: [roomFamily] },
   { name: "Suite Room", desc: "Premium suite with sitting area for a luxurious yet affordable stay.", images: [roomSuite] },
 ];

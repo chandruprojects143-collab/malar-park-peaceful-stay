@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Wifi, Snowflake, Tv, ShowerHead, Car, BedDouble, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { slugify } from "@/lib/analytics";
 import roomDeluxe from "@/assets/room-deluxe.jpg";
 import roomFamily from "@/assets/room-family.jpg";
 import roomSuite from "@/assets/room-suite.jpg";
@@ -148,6 +150,9 @@ export const RoomCard = ({ room }: { room: DisplayRoom }) => (
         ))}
       </div>
       <div className="flex gap-2">
+        <Link to={`/rooms/${slugify(room.name)}`} className="flex-1">
+          <Button variant="outline" className="w-full" size="sm">View Details</Button>
+        </Link>
         <a href="#booking" className="flex-1">
           <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" size="sm">Book Now</Button>
         </a>

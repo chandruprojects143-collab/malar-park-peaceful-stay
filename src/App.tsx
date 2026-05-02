@@ -23,6 +23,8 @@ import UtilityTracker from "./pages/admin/UtilityTracker.tsx";
 import Reports from "./pages/admin/Reports.tsx";
 import RoomPhotos from "./pages/admin/RoomPhotos.tsx";
 import GalleryPhotos from "./pages/admin/GalleryPhotos.tsx";
+import AvailabilityManager from "./pages/admin/AvailabilityManager.tsx";
+import RoomDetail from "./pages/RoomDetail.tsx";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/rooms/:slug" element={<RoomDetail />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
@@ -52,6 +55,7 @@ const App = () => (
               <Route path="reports" element={<Reports />} />
               <Route path="room-photos" element={<RoomPhotos />} />
               <Route path="gallery-photos" element={<GalleryPhotos />} />
+              <Route path="availability" element={<AvailabilityManager />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

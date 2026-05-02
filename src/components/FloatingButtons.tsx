@@ -1,4 +1,5 @@
 import { Phone, MessageCircle } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 const FloatingButtons = () => (
   <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
@@ -8,6 +9,7 @@ const FloatingButtons = () => (
       rel="noopener noreferrer"
       className="w-14 h-14 rounded-full bg-[hsl(142,70%,40%)] flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
       aria-label="Chat on WhatsApp"
+      onClick={() => trackEvent("floating_whatsapp_click")}
     >
       <MessageCircle className="w-6 h-6 text-primary-foreground" />
     </a>
@@ -15,6 +17,7 @@ const FloatingButtons = () => (
       href="tel:+918300003829"
       className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
       aria-label="Call Now"
+      onClick={() => trackEvent("floating_call_click")}
     >
       <Phone className="w-6 h-6 text-primary-foreground" />
     </a>

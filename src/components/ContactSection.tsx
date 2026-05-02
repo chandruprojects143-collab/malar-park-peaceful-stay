@@ -1,5 +1,6 @@
 import { Phone, Mail, MapPin, MessageCircle, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics";
 
 const ContactSection = () => (
   <section id="contact" className="py-20 bg-gradient-primary">
@@ -40,17 +41,17 @@ const ContactSection = () => (
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <a href="tel:+918300003829">
+          <a href="tel:+918300003829" onClick={() => trackEvent("contact_call_click")}>
             <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 gap-2 w-full sm:w-auto">
               <Phone className="w-4 h-4" /> Call Now
             </Button>
           </a>
-          <a href="https://wa.me/918300003829" target="_blank" rel="noopener noreferrer">
+          <a href="https://wa.me/918300003829" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("contact_whatsapp_click")}>
             <Button size="lg" className="bg-primary-foreground/20 border border-primary-foreground/60 text-primary-foreground hover:bg-primary-foreground/30 gap-2 w-full sm:w-auto backdrop-blur-sm">
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </Button>
           </a>
-          <a href="https://www.google.com/maps/dir/?api=1&destination=Malar+Park,+1852/6,+Chengam+Road,+TSR+Nagar,+Tiruvannamalai,+Tamil+Nadu+606603&destination_place_id=ChIJ_VHwFwDBrDsR6-KLVPQOLw4" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.google.com/maps/dir/?api=1&destination=Malar+Park,+1852/6,+Chengam+Road,+TSR+Nagar,+Tiruvannamalai,+Tamil+Nadu+606603&destination_place_id=ChIJ_VHwFwDBrDsR6-KLVPQOLw4" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("contact_directions_click")}>
             <Button size="lg" className="bg-primary-foreground/20 border border-primary-foreground/60 text-primary-foreground hover:bg-primary-foreground/30 gap-2 w-full sm:w-auto backdrop-blur-sm">
               <Navigation className="w-4 h-4" /> Get Directions
             </Button>

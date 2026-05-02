@@ -10,6 +10,8 @@ import BookingSection from "@/components/BookingSection";
 import ContactSection from "@/components/ContactSection";
 import FloatingButtons from "@/components/FloatingButtons";
 import Footer from "@/components/Footer";
+import GoogleBusinessButtons from "@/components/GoogleBusinessButtons";
+import FAQSection from "@/components/FAQSection";
 
 const Index = () => (
   <>
@@ -19,9 +21,11 @@ const Index = () => (
     <RoomsSection />
     <AmenitiesSection />
     <LocationSection />
+    <GoogleBusinessButtons />
     <ReviewsSection />
     <GallerySection />
     <BookingSection />
+    <FAQSection />
     <ContactSection />
     <Footer />
     <FloatingButtons />

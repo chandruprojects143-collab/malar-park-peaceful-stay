@@ -89,6 +89,8 @@ const RoomPhotos = () => {
   };
 
   const updateRoomPrice = (id: string, newPrice: number) => {
+    if (Number.isNaN(newPrice) || newPrice < 0) { toast.error('Price must be a positive number'); return; }
+    if (newPrice > 100000) { toast.error('Price seems too high (max ₹1,00,000)'); return; }
     setRooms(rooms.map(r => r.id === id ? { ...r, price: newPrice } : r));
   };
 
@@ -142,8 +144,9 @@ const RoomPhotos = () => {
                 <Input value={description} onChange={e => setDescription(e.target.value)} placeholder="Short description" />
               </div>
               <div>
-                <Label>Price per Night (₹)</Label>
-                <Input type="number" min={0} value={price || ''} onChange={e => setPrice(Number(e.target.value))} placeholder="1200" />
+                <Label>Price per Night (₹) <span className="text-xs text-muted-foreground">— shown in INR on homepage & Google</span></Label>
+                <Input type="number" min={1} max={100000} value={price || ''} onChange={e => setPrice(Math.max(0, Number(e.target.value)))} placeholder="1200" />
+                {price > 0 && <p className="text-xs text-muted-foreground mt-1">Will display as <strong>₹{price.toLocaleString('en-IN')}/night</strong></p>}
               </div>
               <div>
                 <Label>Upload Images (select multiple)</Label>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { CalendarIcon, Users, BedDouble, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,8 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, isSameDay, eachDayOfInterval } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
+import { useUnavailableDates } from "@/hooks/useRooms";
+import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics";
 
 const BookingSection = () => {
   const [checkIn, setCheckIn] = useState<Date>();
@@ -18,9 +21,35 @@ const BookingSection = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
+  const unavailableStr = useUnavailableDates();
+  const unavailable = useMemo(() => unavailableStr.map(d => new Date(d)), [unavailableStr]);
+
+  const isUnavailable = (d: Date) => unavailable.some(u => isSameDay(u, d));
+
+  const rangeHasUnavailable = (a?: Date, b?: Date) => {
+    if (!a || !b) return false;
+    return eachDayOfInterval({ start: a, end: b }).some(isUnavailable);
+  };
 
   const handleWhatsAppBooking = () => {
-    const text = `Hi, I'd like to book at Malar Park.\n\nName: ${name}\nPhone: ${phone}\nCheck-in: ${checkIn ? format(checkIn, "PPP") : "N/A"}\nCheck-out: ${checkOut ? format(checkOut, "PPP") : "N/A"}\nGuests: ${guests}\nRoom: ${room}\n${message ? `Message: ${message}` : ""}`;
+    if (!name.trim() || !phone.trim()) {
+      toast.error("Please enter your name and phone number");
+      return;
+    }
+    if (!checkIn || !checkOut) {
+      toast.error("Please select check-in and check-out dates");
+      return;
+    }
+    if (checkOut <= checkIn) {
+      toast.error("Check-out must be after check-in");
+      return;
+    }
+    if (rangeHasUnavailable(checkIn, checkOut)) {
+      toast.error("Some dates in your range are unavailable. Please choose different dates.");
+      return;
+    }
+    trackEvent("booking_whatsapp_submit", { room, guests });
+    const text = `Hi, I'd like to book at Malar Park.\n\nName: ${name}\nPhone: ${phone}\nCheck-in: ${format(checkIn, "PPP")}\nCheck-out: ${format(checkOut, "PPP")}\nGuests: ${guests}\nRoom: ${room}\n${message ? `Message: ${message}` : ""}`;
     window.open(`https://wa.me/918300003829?text=${encodeURIComponent(text)}`, "_blank");
   };
 
@@ -55,7 +84,8 @@ const BookingSection = () => {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={checkIn} onSelect={setCheckIn} disabled={(d) => d < new Date()} initialFocus className="p-3 pointer-events-auto" />
+                  <Calendar mode="single" selected={checkIn} onSelect={setCheckIn} disabled={(d) => d < new Date(new Date().setHours(0,0,0,0)) || isUnavailable(d)} initialFocus className="p-3 pointer-events-auto" />
+                  {unavailable.length > 0 && <p className="text-[11px] text-muted-foreground px-3 pb-2">Greyed dates are fully booked.</p>}
                 </PopoverContent>
               </Popover>
             </div>
@@ -69,7 +99,7 @@ const BookingSection = () => {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={checkOut} onSelect={setCheckOut} disabled={(d) => d < (checkIn || new Date())} initialFocus className="p-3 pointer-events-auto" />
+                  <Calendar mode="single" selected={checkOut} onSelect={setCheckOut} disabled={(d) => d < (checkIn || new Date()) || isUnavailable(d)} initialFocus className="p-3 pointer-events-auto" />
                 </PopoverContent>
               </Popover>
             </div>

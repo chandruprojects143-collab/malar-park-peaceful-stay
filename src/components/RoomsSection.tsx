@@ -150,6 +150,9 @@ export const RoomCard = ({ room }: { room: DisplayRoom }) => (
         ))}
       </div>
       <div className="flex gap-2">
+        <Link to={`/rooms/${slugify(room.name)}`} className="flex-1">
+          <Button variant="outline" className="w-full" size="sm">View Details</Button>
+        </Link>
         <a href="#booking" className="flex-1">
           <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" size="sm">Book Now</Button>
         </a>

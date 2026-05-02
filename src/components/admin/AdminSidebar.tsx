@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, BedDouble, IndianRupee, Receipt, Users, Shirt, Zap, BarChart3,
-  LogOut, ArrowLeft, Wrench, CreditCard, ClipboardList, Bell
+  LogOut, ArrowLeft, Wrench, CreditCard, ClipboardList, Bell, CalendarDays, Image
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
@@ -24,6 +24,9 @@ const menuItems = [
   { title: 'Staff', url: '/admin/staff', icon: Users, module: 'staff' },
   { title: 'Utilities', url: '/admin/utilities', icon: Zap, module: 'utilities' },
   { title: 'Reports', url: '/admin/reports', icon: BarChart3, module: 'reports' },
+  { title: 'Room Photos', url: '/admin/room-photos', icon: Image, module: 'room-photos' },
+  { title: 'Gallery Photos', url: '/admin/gallery-photos', icon: Image, module: 'gallery-photos' },
+  { title: 'Availability', url: '/admin/availability', icon: CalendarDays, module: 'availability' },
 ];
 
 export function AdminSidebar() {

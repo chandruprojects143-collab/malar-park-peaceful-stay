@@ -84,7 +84,8 @@ const BookingSection = () => {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={checkIn} onSelect={setCheckIn} disabled={(d) => d < new Date()} initialFocus className="p-3 pointer-events-auto" />
+                  <Calendar mode="single" selected={checkIn} onSelect={setCheckIn} disabled={(d) => d < new Date(new Date().setHours(0,0,0,0)) || isUnavailable(d)} initialFocus className="p-3 pointer-events-auto" />
+                  {unavailable.length > 0 && <p className="text-[11px] text-muted-foreground px-3 pb-2">Greyed dates are fully booked.</p>}
                 </PopoverContent>
               </Popover>
             </div>
@@ -98,7 +99,7 @@ const BookingSection = () => {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={checkOut} onSelect={setCheckOut} disabled={(d) => d < (checkIn || new Date())} initialFocus className="p-3 pointer-events-auto" />
+                  <Calendar mode="single" selected={checkOut} onSelect={setCheckOut} disabled={(d) => d < (checkIn || new Date()) || isUnavailable(d)} initialFocus className="p-3 pointer-events-auto" />
                 </PopoverContent>
               </Popover>
             </div>

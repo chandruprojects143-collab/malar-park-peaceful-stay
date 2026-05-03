@@ -127,7 +127,17 @@ export const RoomImageCarousel = ({ images, name }: { images: string[]; name: st
   );
 };
 
-export const RoomCard = ({ room }: { room: DisplayRoom }) => (
+export const RoomCard = ({ room }: { room: DisplayRoom }) => {
+  const { t } = useT();
+  const nameKey = roomNameKey(room.name);
+  const descKey = roomDescKey(room.name);
+  const displayName = nameKey ? t(nameKey) : room.name;
+  const displayDesc = descKey ? t(descKey) : room.desc;
+  const wa = buildWhatsAppHref(
+    `Hi, I want to enquire about the ${room.name} (₹${room.price}/night)`,
+    { source: "website", medium: "room_card", campaign: "whatsapp", content: slugify(room.name) }
+  );
+  return (
   <article
     itemScope
     itemType="https://schema.org/Product"
@@ -140,7 +150,7 @@ export const RoomCard = ({ room }: { room: DisplayRoom }) => (
     </div>
     <div className="p-6">
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="font-heading text-xl font-bold text-foreground" itemProp="name">{room.name}</h3>
+        <h3 className="font-heading text-xl font-bold text-foreground" itemProp="name">{displayName}</h3>
         <div
           className="text-right"
           itemProp="offers"
@@ -151,41 +161,41 @@ export const RoomCard = ({ room }: { room: DisplayRoom }) => (
             <span itemProp="priceCurrency" content="INR">₹</span>
             <span itemProp="price" content={String(room.price)}>{room.price.toLocaleString()}</span>
           </p>
-          <p className="text-[11px] text-muted-foreground">per night</p>
+          <p className="text-[11px] text-muted-foreground">{t("rooms.perNight")}</p>
           <link itemProp="availability" href="https://schema.org/InStock" />
         </div>
       </div>
-      <p className="text-muted-foreground text-sm mb-4">{room.desc}</p>
+      <p className="text-muted-foreground text-sm mb-4">{displayDesc}</p>
       <div className="grid grid-cols-3 gap-2 mb-5">
         {amenityIcons.map((a) => (
-          <div key={a.label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div key={a.key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <a.icon className="w-3.5 h-3.5 text-primary" />
-            {a.label}
+            {t(a.key)}
           </div>
         ))}
       </div>
       <div className="flex gap-2">
-        <Link to={`/rooms/${slugify(room.name)}`} className="flex-1">
-          <Button variant="outline" className="w-full" size="sm">View Details</Button>
+        <Link to={`/rooms/${slugify(room.name)}`} className="flex-1" onClick={() => trackEvent("room_view_details", { room: room.name })}>
+          <Button variant="outline" className="w-full" size="sm">{t("cta.viewDetails")}</Button>
         </Link>
-        <a href="#booking" className="flex-1">
-          <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" size="sm">Book Now</Button>
+        <a href="#booking" className="flex-1" onClick={() => trackEvent("room_book_click", { room: room.name })}>
+          <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" size="sm">{t("cta.book")}</Button>
         </a>
-        <a
-          href={`https://wa.me/918300003829?text=Hi%2C%20I%20want%20to%20enquire%20about%20the%20${encodeURIComponent(room.name)}%20(₹${room.price}/night)`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1"
-        >
-          <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground" size="sm">WhatsApp</Button>
+        <a href={wa} target="_blank" rel="noopener noreferrer" className="flex-1"
+          onClick={() => trackEvent("room_whatsapp_click", { room: room.name })}>
+          <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground" size="sm">
+            <MessageCircle className="w-3.5 h-3.5 mr-1" />{t("cta.whatsapp")}
+          </Button>
         </a>
       </div>
     </div>
   </article>
-);
+  );
+};
 
 const RoomsSection = () => {
   const [customPhotos] = useLocalStorage<RoomPhoto[]>('malar_room_photos', []);
+  const { t } = useT();
   const rooms: DisplayRoom[] = customPhotos.length > 0
     ? customPhotos.map(p => ({
         name: p.name,
@@ -201,12 +211,12 @@ const RoomsSection = () => {
     <section id="rooms" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <p className="text-secondary font-medium tracking-widest uppercase text-sm mb-2">Our Rooms</p>
+          <p className="text-secondary font-medium tracking-widest uppercase text-sm mb-2">{t("rooms.kicker")}</p>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">
-            Choose Your Perfect Stay
+            {t("rooms.title")}
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Rooms starting from <span className="font-bold text-primary">₹{minPrice.toLocaleString()}/night</span>
+            {t("rooms.startsFrom")} <span className="font-bold text-primary">₹{minPrice.toLocaleString()}/{t("rooms.perNight")}</span>
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">

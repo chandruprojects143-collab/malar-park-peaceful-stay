@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Wifi, Snowflake, Tv, ShowerHead, Car, BedDouble, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import { Wifi, Snowflake, Tv, ShowerHead, Car, BedDouble, ChevronLeft, ChevronRight, ImageOff, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { slugify } from "@/lib/analytics";
+import { slugify, buildWhatsAppHref, trackEvent } from "@/lib/analytics";
+import { useT } from "@/i18n/LanguageContext";
 import roomDeluxe from "@/assets/room-deluxe.jpg";
 import roomFamily from "@/assets/room-family.jpg";
 import roomSuite from "@/assets/room-suite.jpg";
@@ -24,12 +25,12 @@ export interface DisplayRoom {
 }
 
 const amenityIcons = [
-  { icon: Snowflake, label: "AC / Non AC" },
-  { icon: Wifi, label: "Free WiFi" },
-  { icon: ShowerHead, label: "Hot Water" },
-  { icon: Tv, label: "LED TV" },
-  { icon: BedDouble, label: "Comfortable Beds" },
-  { icon: Car, label: "Parking" },
+  { icon: Snowflake, key: "amenity.ac" },
+  { icon: Wifi, key: "amenity.wifi" },
+  { icon: ShowerHead, key: "amenity.hotwater" },
+  { icon: Tv, key: "amenity.tv" },
+  { icon: BedDouble, key: "amenity.beds" },
+  { icon: Car, key: "amenity.parking" },
 ];
 
 export const defaultRooms: DisplayRoom[] = [
@@ -37,6 +38,20 @@ export const defaultRooms: DisplayRoom[] = [
   { name: "Family Room", desc: "Spacious room ideal for families with extra beds and amenities.", images: [roomFamily], price: 1800 },
   { name: "Suite Room", desc: "Premium suite with sitting area for a luxurious yet affordable stay.", images: [roomSuite], price: 2500 },
 ];
+
+// Map default English room names → translation keys (only applied when defaultRooms used)
+const roomNameKey = (name: string): string | null => {
+  if (name === "Deluxe Room") return "rooms.deluxe";
+  if (name === "Family Room") return "rooms.family";
+  if (name === "Suite Room") return "rooms.suite";
+  return null;
+};
+const roomDescKey = (name: string): string | null => {
+  if (name === "Deluxe Room") return "rooms.deluxe.desc";
+  if (name === "Family Room") return "rooms.family.desc";
+  if (name === "Suite Room") return "rooms.suite.desc";
+  return null;
+};
 
 const FallbackImage = ({ name }: { name: string }) => (
   <div className="w-full h-56 flex flex-col items-center justify-center bg-muted text-muted-foreground gap-2">

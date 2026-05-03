@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AdminAuthProvider } from "@/hooks/useAdminAuth";
+import { LanguageProvider } from "@/i18n/LanguageContext";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import AdminLogin from "./pages/admin/AdminLogin.tsx";
@@ -34,6 +35,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AdminAuthProvider>
+        <LanguageProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -60,6 +62,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </LanguageProvider>
       </AdminAuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

@@ -1,42 +1,30 @@
 import { useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useT } from "@/i18n/LanguageContext";
+import { dict } from "@/i18n/translations";
 
-const faqs = [
-  {
-    q: "Where is Malar Park Hotel located?",
-    a: "Malar Park is at 1852/6, Chengam Main Road, opposite Sri Ramanasramam, Tiruvannamalai – 606601, Tamil Nadu, just 1.5 km from Sri Arunachaleswarar Temple.",
-  },
-  {
-    q: "What are the room prices at Malar Park?",
-    a: "Rooms start from ₹1,200/night for Deluxe, ₹1,800 for Family Room and ₹2,500 for the Suite. Prices include taxes and free WiFi.",
-  },
-  {
-    q: "What are the check-in and check-out times?",
-    a: "Check-in is from 12:00 PM and check-out is by 11:00 AM. Early check-in is subject to availability.",
-  },
-  {
-    q: "Do you offer free parking and WiFi?",
-    a: "Yes. Malar Park provides free on-site parking and complimentary high-speed WiFi for all guests.",
-  },
-  {
-    q: "How can I book a room at Malar Park?",
-    a: "You can book instantly via WhatsApp at +91 83000 03829, call us, or fill the booking form on this website.",
-  },
-  {
-    q: "Is the hotel suitable for Girivalam pilgrims?",
-    a: "Absolutely. We are right opposite Ramana Ashram and on the Girivalam route, making it ideal for spiritual visitors.",
-  },
+const faqKeys = [
+  { q: "faq.q1", a: "faq.a1" },
+  { q: "faq.q2", a: "faq.a2" },
+  { q: "faq.q3", a: "faq.a3" },
+  { q: "faq.q4", a: "faq.a4" },
+  { q: "faq.q5", a: "faq.a5" },
+  { q: "faq.q6", a: "faq.a6" },
 ];
 
 const FAQSection = () => {
+  const { t } = useT();
+
   useEffect(() => {
+    // Always emit JSON-LD in English for Google indexing
+    const en = dict.en;
     const data = {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: faqs.map(f => ({
+      mainEntity: faqKeys.map(f => ({
         "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
+        name: en[f.q],
+        acceptedAnswer: { "@type": "Answer", text: en[f.a] },
       })),
     };
     const reviewData = {
@@ -65,16 +53,16 @@ const FAQSection = () => {
     <section id="faq" className="py-20 bg-card">
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="text-center mb-10">
-          <p className="text-secondary font-medium tracking-widest uppercase text-sm mb-2">FAQ</p>
+          <p className="text-secondary font-medium tracking-widest uppercase text-sm mb-2">{t("faq.kicker")}</p>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">
-            Frequently Asked Questions
+            {t("faq.title")}
           </h2>
         </div>
         <Accordion type="single" collapsible className="w-full">
-          {faqs.map((f, i) => (
+          {faqKeys.map((f, i) => (
             <AccordionItem key={i} value={`item-${i}`}>
-              <AccordionTrigger className="text-left text-foreground font-medium">{f.q}</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
+              <AccordionTrigger className="text-left text-foreground font-medium">{t(f.q)}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">{t(f.a)}</AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>

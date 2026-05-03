@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { useT } from "@/i18n/LanguageContext";
 
 const reviews = [
   { name: "Rajesh K.", text: "Very clean rooms and the location is perfect – right opposite Ramana Ashram. Will definitely visit again!", rating: 5 },
@@ -7,13 +8,15 @@ const reviews = [
   { name: "Priya R.", text: "Best budget hotel in Tiruvannamalai. Perfect for Girivalam. Hot water and clean bathrooms. Highly recommend!", rating: 5 },
 ];
 
-const ReviewsSection = () => (
+const ReviewsSection = () => {
+  const { t } = useT();
+  return (
   <section id="reviews" className="py-20 bg-background">
     <div className="container mx-auto px-4">
       <div className="text-center mb-12">
-        <p className="text-secondary font-medium tracking-widest uppercase text-sm mb-2">Guest Reviews</p>
+        <p className="text-secondary font-medium tracking-widest uppercase text-sm mb-2">{t("reviews.kicker")}</p>
         <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">
-          What Our Guests Say
+          {t("reviews.title")}
         </h2>
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -31,6 +34,7 @@ const ReviewsSection = () => (
       </div>
     </div>
   </section>
-);
+  );
+};
 
 export default ReviewsSection;

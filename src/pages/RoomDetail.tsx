@@ -9,6 +9,7 @@ import { useT } from "@/i18n/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingButtons from "@/components/FloatingButtons";
+import { setSocialMeta } from "@/lib/socialMeta";
 import { Wifi, Snowflake, Tv, ShowerHead, Car, BedDouble } from "lucide-react";
 
 const amenities = [

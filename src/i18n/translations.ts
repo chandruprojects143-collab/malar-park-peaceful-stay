@@ -212,6 +212,7 @@ export const dict: Record<Lang, Record<string, string>> = {
     'booking.nights': 'இரவுகள்',
     'booking.notes': 'விசேட கோரிக்கைகள் (விரும்பினால்)',
     'booking.submit': 'வாட்ஸ்அப் மூலம் விசாரணை அனுப்பு',
+    'booking.downloadPdf': 'முன்பதிவு PDF பதிவிறக்கவும்',
     'booking.greyed': 'நரை நிற தேதிகள் முழுமையாக முன்பதிவு செய்யப்பட்டுள்ளன.',
     'booking.pickDate': 'தேதி தேர்வு',
     'booking.errName': 'பெயர் மற்றும் தொலைபேசி எண் இடுங்கள்',

@@ -89,6 +89,7 @@ export const dict: Record<Lang, Record<string, string>> = {
     'booking.nights': 'nights',
     'booking.notes': 'Special Requests (optional)',
     'booking.submit': 'Send Enquiry via WhatsApp',
+    'booking.downloadPdf': 'Download Booking PDF',
     'booking.greyed': 'Greyed dates are fully booked.',
     'booking.pickDate': 'Select date',
     'booking.errName': 'Please enter your name and phone number',

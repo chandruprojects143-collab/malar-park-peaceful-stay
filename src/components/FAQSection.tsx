@@ -12,21 +12,44 @@ const faqKeys = [
   { q: "faq.q6", a: "faq.a6" },
 ];
 
+const buildFaqSchema = (lang: "en" | "ta", url: string) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  inLanguage: lang === "ta" ? "ta-IN" : "en-IN",
+  "@id": `${url}#faq-${lang}`,
+  mainEntity: faqKeys.map(f => ({
+    "@type": "Question",
+    name: dict[lang][f.q],
+    acceptedAnswer: { "@type": "Answer", text: dict[lang][f.a] },
+  })),
+});
+
 const FAQSection = () => {
-  const { t } = useT();
+  const { t, lang } = useT();
 
   useEffect(() => {
-    // Always emit JSON-LD in English for Google indexing
-    const en = dict.en;
-    const data = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: faqKeys.map(f => ({
-        "@type": "Question",
-        name: en[f.q],
-        acceptedAnswer: { "@type": "Answer", text: en[f.a] },
-      })),
-    };
+    const url = typeof window !== "undefined" ? window.location.origin + "/" : "";
+    const tags: HTMLScriptElement[] = [];
+
+    // Always emit English FAQPage for canonical indexing
+    const enTag = document.createElement("script");
+    enTag.type = "application/ld+json";
+    enTag.id = "jsonld-faq-en";
+    enTag.text = JSON.stringify(buildFaqSchema("en", url));
+    document.head.appendChild(enTag);
+    tags.push(enTag);
+
+    // Add Tamil FAQPage only when Tamil is active
+    if (lang === "ta") {
+      const taTag = document.createElement("script");
+      taTag.type = "application/ld+json";
+      taTag.id = "jsonld-faq-ta";
+      taTag.text = JSON.stringify(buildFaqSchema("ta", url));
+      document.head.appendChild(taTag);
+      tags.push(taTag);
+    }
+
+    // Hotel review structured data (language-independent)
     const reviewData = {
       "@context": "https://schema.org",
       "@type": "Hotel",
@@ -37,17 +60,15 @@ const FAQSection = () => {
         { "@type": "Review", author: { "@type": "Person", name: "Priya R." }, reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" }, reviewBody: "Best budget hotel in Tiruvannamalai. Perfect for Girivalam." },
       ],
     };
-    const tags: HTMLScriptElement[] = [];
-    [data, reviewData].forEach((d, i) => {
-      const tag = document.createElement("script");
-      tag.type = "application/ld+json";
-      tag.id = `jsonld-faq-${i}`;
-      tag.text = JSON.stringify(d);
-      document.head.appendChild(tag);
-      tags.push(tag);
-    });
-    return () => tags.forEach(t => t.remove());
-  }, []);
+    const reviewTag = document.createElement("script");
+    reviewTag.type = "application/ld+json";
+    reviewTag.id = "jsonld-hotel-reviews";
+    reviewTag.text = JSON.stringify(reviewData);
+    document.head.appendChild(reviewTag);
+    tags.push(reviewTag);
+
+    return () => tags.forEach(tg => tg.remove());
+  }, [lang]);
 
   return (
     <section id="faq" className="py-20 bg-card">

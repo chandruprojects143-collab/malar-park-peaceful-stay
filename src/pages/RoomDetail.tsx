@@ -77,7 +77,17 @@ const RoomDetail = () => {
       tag.id = "jsonld-hotelroom";
       tag.text = JSON.stringify(data);
       document.head.appendChild(tag);
-      return () => { tag.remove(); };
+
+      // Dynamic OG / Twitter image meta from this room's photos
+      const cleanupSocial = setSocialMeta({
+        title: `${room.name} – ₹${room.price}/night | Malar Park Hotel`,
+        description: room.desc,
+        images: room.images,
+        url: typeof window !== "undefined" ? window.location.href : undefined,
+        type: "product",
+      });
+
+      return () => { tag.remove(); cleanupSocial(); };
     }
   }, [room]);
 

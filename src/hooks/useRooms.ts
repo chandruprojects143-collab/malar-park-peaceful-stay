@@ -14,7 +14,16 @@ export function useRooms(): DisplayRoom[] {
     : defaultRooms;
 }
 
+/** Global unavailable dates (legacy / hotel-wide blockouts). */
 export function useUnavailableDates(): string[] {
   const [dates] = useLocalStorage<string[]>('malar_unavailable_dates', []);
   return dates;
+}
+
+/** Per-room unavailable dates: { [roomName]: ['yyyy-MM-dd', ...] }. */
+export type PerRoomUnavailable = Record<string, string[]>;
+
+export function usePerRoomUnavailable(): PerRoomUnavailable {
+  const [map] = useLocalStorage<PerRoomUnavailable>('malar_room_unavailable', {});
+  return map;
 }

@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Wifi, Snowflake, Tv, ShowerHead, Car, BedDouble, ChevronLeft, ChevronRight, ImageOff, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { slugify, buildWhatsAppHref, trackEvent } from "@/lib/analytics";
 import { useT } from "@/i18n/LanguageContext";
+import { setSocialMeta } from "@/lib/socialMeta";
 import roomDeluxe from "@/assets/room-deluxe.jpg";
 import roomFamily from "@/assets/room-family.jpg";
 import roomSuite from "@/assets/room-suite.jpg";
@@ -206,6 +207,17 @@ const RoomsSection = () => {
     : defaultRooms;
 
   const minPrice = Math.min(...rooms.map(r => r.price));
+
+  // Dynamic OG/Twitter images sourced from selected room photos
+  useEffect(() => {
+    const imgs = rooms.flatMap(r => r.images).filter(Boolean).slice(0, 4);
+    if (imgs.length === 0) return;
+    const cleanup = setSocialMeta({
+      images: imgs,
+      url: typeof window !== "undefined" ? window.location.origin + "/" : undefined,
+    });
+    return cleanup;
+  }, [rooms]);
 
   return (
     <section id="rooms" className="py-20 bg-background">

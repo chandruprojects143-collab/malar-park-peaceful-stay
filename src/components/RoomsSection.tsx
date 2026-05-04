@@ -208,6 +208,17 @@ const RoomsSection = () => {
 
   const minPrice = Math.min(...rooms.map(r => r.price));
 
+  // Dynamic OG/Twitter images sourced from selected room photos
+  useEffect(() => {
+    const imgs = rooms.flatMap(r => r.images).filter(Boolean).slice(0, 4);
+    if (imgs.length === 0) return;
+    const cleanup = setSocialMeta({
+      images: imgs,
+      url: typeof window !== "undefined" ? window.location.origin + "/" : undefined,
+    });
+    return cleanup;
+  }, [rooms]);
+
   return (
     <section id="rooms" className="py-20 bg-background">
       <div className="container mx-auto px-4">

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CalendarIcon, MessageCircle, Plus, Minus } from "lucide-react";
+import { CalendarIcon, MessageCircle, Plus, Minus, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,10 +9,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format, isSameDay, eachDayOfInterval, differenceInCalendarDays } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
-import { useUnavailableDates, useRooms } from "@/hooks/useRooms";
+import { useUnavailableDates, useRooms, usePerRoomUnavailable } from "@/hooks/useRooms";
 import { toast } from "sonner";
 import { trackEvent, buildWhatsAppHref } from "@/lib/analytics";
 import { useT } from "@/i18n/LanguageContext";
+import { downloadBookingPdf, type BookingPdfData } from "@/lib/bookingPdf";
 
 const BookingSection = () => {
   const { t } = useT();
@@ -23,15 +24,27 @@ const BookingSection = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
-  // Selected qty per room name
   const [qty, setQty] = useState<Record<string, number>>({});
+  const [lastBooking, setLastBooking] = useState<BookingPdfData | null>(null);
 
   const unavailableStr = useUnavailableDates();
+  const perRoom = usePerRoomUnavailable();
+
   const unavailable = useMemo(() => unavailableStr.map((d) => new Date(d)), [unavailableStr]);
   const isUnavailable = (d: Date) => unavailable.some((u) => isSameDay(u, d));
-  const rangeHasUnavailable = (a?: Date, b?: Date) => {
+  const rangeHasGlobalUnavailable = (a?: Date, b?: Date) => {
     if (!a || !b) return false;
     return eachDayOfInterval({ start: a, end: b }).some(isUnavailable);
+  };
+
+  // Per-room: returns true if any selected date in [a,b) is blocked for this room
+  const roomHasConflict = (roomName: string, a?: Date, b?: Date) => {
+    if (!a || !b) return false;
+    const blocked = (perRoom[roomName] ?? []).map((d) => new Date(d));
+    if (blocked.length === 0) return false;
+    return eachDayOfInterval({ start: a, end: b }).some((d) =>
+      blocked.some((u) => isSameDay(u, d))
+    );
   };
 
   const nights = checkIn && checkOut ? Math.max(0, differenceInCalendarDays(checkOut, checkIn)) : 0;
@@ -40,15 +53,36 @@ const BookingSection = () => {
   const subtotal = selectedEntries.reduce((s, r) => s + r.price * (qty[r.name] || 0), 0);
   const total = subtotal * Math.max(1, nights);
 
-  const inc = (n: string) => setQty((p) => ({ ...p, [n]: (p[n] || 0) + 1 }));
+  const inc = (n: string) => {
+    if (checkIn && checkOut && roomHasConflict(n, checkIn, checkOut)) {
+      toast.error(`${n} is sold out for the selected dates`);
+      return;
+    }
+    setQty((p) => ({ ...p, [n]: (p[n] || 0) + 1 }));
+  };
   const dec = (n: string) => setQty((p) => ({ ...p, [n]: Math.max(0, (p[n] || 0) - 1) }));
 
   const handleSubmit = () => {
     if (!name.trim() || !phone.trim()) return toast.error(t("booking.errName"));
     if (!checkIn || !checkOut) return toast.error(t("booking.errDates"));
     if (checkOut <= checkIn) return toast.error(t("booking.errOrder"));
-    if (rangeHasUnavailable(checkIn, checkOut)) return toast.error(t("booking.errUnavail"));
+    if (rangeHasGlobalUnavailable(checkIn, checkOut)) return toast.error(t("booking.errUnavail"));
     if (selectedEntries.length === 0) return toast.error(t("booking.errRoom"));
+
+    // Per-room lock check
+    const conflicting = selectedEntries.filter((r) => roomHasConflict(r.name, checkIn, checkOut));
+    if (conflicting.length > 0) {
+      return toast.error(
+        `${conflicting.map((r) => r.name).join(", ")} sold out for these dates. Please remove or change dates.`
+      );
+    }
+
+    const data: BookingPdfData = {
+      name, phone, checkIn, checkOut, nights, guests,
+      rooms: selectedEntries.map((r) => ({ name: r.name, qty: qty[r.name] || 0, price: r.price })),
+      total, message: message || undefined,
+    };
+    setLastBooking(data);
 
     trackEvent("booking_whatsapp_submit", { rooms: totalRooms, guests, total });
     const lines = selectedEntries.map((r) => `• ${r.name} × ${qty[r.name]} (₹${r.price.toLocaleString()}/night)`).join("\n");
@@ -68,6 +102,21 @@ Estimated total: ₹${total.toLocaleString()}
 ${message ? `Message: ${message}` : ""}`;
     const wa = buildWhatsAppHref(text, { source: "website", medium: "booking_form", campaign: "multi_room" });
     window.open(wa, "_blank");
+
+    // Auto-download PDF confirmation
+    try {
+      downloadBookingPdf(data);
+      trackEvent("booking_pdf_auto_download", { total });
+      toast.success("Booking enquiry PDF downloaded");
+    } catch (e) {
+      console.error("PDF generation failed", e);
+    }
+  };
+
+  const handlePdfClick = () => {
+    if (!lastBooking) return;
+    downloadBookingPdf(lastBooking);
+    trackEvent("booking_pdf_manual_download", {});
   };
 
   return (
@@ -140,18 +189,22 @@ ${message ? `Message: ${message}` : ""}`;
             <div className="mt-2 space-y-2">
               {rooms.map((r) => {
                 const count = qty[r.name] || 0;
+                const soldOut = checkIn && checkOut ? roomHasConflict(r.name, checkIn, checkOut) : false;
                 return (
-                  <div key={r.name} className="flex items-center justify-between gap-2 bg-muted/50 rounded-lg p-3">
+                  <div key={r.name} className={cn("flex items-center justify-between gap-2 rounded-lg p-3", soldOut ? "bg-destructive/10 opacity-70" : "bg-muted/50")}>
                     <div className="min-w-0">
                       <p className="font-medium text-foreground text-sm truncate">{r.name}</p>
-                      <p className="text-xs text-muted-foreground">₹{r.price.toLocaleString()} / {t("rooms.perNight")}</p>
+                      <p className="text-xs text-muted-foreground">
+                        ₹{r.price.toLocaleString()} / {t("rooms.perNight")}
+                        {soldOut && <span className="ml-2 text-destructive font-medium">· Sold out for selected dates</span>}
+                      </p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Button type="button" variant="outline" size="icon" className="h-9 w-9" onClick={() => dec(r.name)} aria-label={`Decrease ${r.name}`} disabled={count === 0}>
                         <Minus className="w-4 h-4" />
                       </Button>
                       <span className="w-6 text-center text-sm font-semibold tabular-nums">{count}</span>
-                      <Button type="button" variant="outline" size="icon" className="h-9 w-9" onClick={() => inc(r.name)} aria-label={`Increase ${r.name}`}>
+                      <Button type="button" variant="outline" size="icon" className="h-9 w-9" onClick={() => inc(r.name)} aria-label={`Increase ${r.name}`} disabled={soldOut}>
                         <Plus className="w-4 h-4" />
                       </Button>
                     </div>
@@ -178,6 +231,12 @@ ${message ? `Message: ${message}` : ""}`;
           <Button onClick={handleSubmit} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gap-2" size="lg">
             <MessageCircle className="w-5 h-5" /> {t("booking.submit")}
           </Button>
+
+          {lastBooking && (
+            <Button onClick={handlePdfClick} variant="outline" className="w-full mt-3 gap-2" size="lg">
+              <Download className="w-5 h-5" /> {t("booking.downloadPdf")}
+            </Button>
+          )}
         </div>
       </div>
     </section>

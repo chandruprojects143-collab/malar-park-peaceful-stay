@@ -60,6 +60,8 @@ const App = () => (
               <Route path="room-photos" element={<RoomPhotos />} />
               <Route path="gallery-photos" element={<GalleryPhotos />} />
               <Route path="availability" element={<AvailabilityManager />} />
+              <Route path="availability-summary" element={<AvailabilitySummary />} />
+              <Route path="seo-preview" element={<SeoPreview />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

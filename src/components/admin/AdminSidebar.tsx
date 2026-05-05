@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, BedDouble, IndianRupee, Receipt, Users, Shirt, Zap, BarChart3,
-  LogOut, ArrowLeft, Wrench, CreditCard, ClipboardList, Bell, CalendarDays, Image
+  LogOut, ArrowLeft, Wrench, CreditCard, ClipboardList, Bell, CalendarDays, Image, Search, Gauge
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';

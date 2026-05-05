@@ -3,7 +3,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useT } from "@/i18n/LanguageContext";
 import { dict } from "@/i18n/translations";
 
-const faqKeys = [
+export const faqKeys = [
   { q: "faq.q1", a: "faq.a1" },
   { q: "faq.q2", a: "faq.a2" },
   { q: "faq.q3", a: "faq.a3" },
@@ -12,7 +12,7 @@ const faqKeys = [
   { q: "faq.q6", a: "faq.a6" },
 ];
 
-const buildFaqSchema = (lang: "en" | "ta", url: string) => ({
+export const buildFaqSchema = (lang: "en" | "ta", url: string) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
   inLanguage: lang === "ta" ? "ta-IN" : "en-IN",

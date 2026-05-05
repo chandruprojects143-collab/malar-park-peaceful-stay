@@ -44,10 +44,16 @@ export const setSocialMeta = (meta: SocialMeta): (() => void) => {
     el.content = content;
   };
 
-  // Skip data: URLs for OG (crawlers can't fetch them) — only use http(s)
-  const usableImages = meta.images
-    .map(toAbsolute)
-    .filter((u) => /^https?:\/\//i.test(u));
+  // Skip data:/blob: URLs (crawlers can't fetch them) — only use http(s) or root-relative
+  const absolute = meta.images.map(toAbsolute);
+  const usableImages = absolute.filter((u) => /^https?:\/\//i.test(u));
+  const skipped = absolute.filter((u) => !/^https?:\/\//i.test(u));
+  if (skipped.length > 0 && typeof console !== "undefined") {
+    console.warn(
+      `[socialMeta] Skipped ${skipped.length} non-public image URL(s) (data:/blob:) from OG/Twitter meta. Re-upload to hosted storage to enable rich previews.`,
+      skipped.map((u) => (u.length > 60 ? u.slice(0, 60) + "…" : u))
+    );
+  }
 
   if (meta.title) {
     upsert('meta[property="og:title"]', "property", "og:title", meta.title);

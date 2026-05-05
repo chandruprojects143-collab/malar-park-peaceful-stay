@@ -25,6 +25,8 @@ import Reports from "./pages/admin/Reports.tsx";
 import RoomPhotos from "./pages/admin/RoomPhotos.tsx";
 import GalleryPhotos from "./pages/admin/GalleryPhotos.tsx";
 import AvailabilityManager from "./pages/admin/AvailabilityManager.tsx";
+import AvailabilitySummary from "./pages/admin/AvailabilitySummary.tsx";
+import SeoPreview from "./pages/admin/SeoPreview.tsx";
 import RoomDetail from "./pages/RoomDetail.tsx";
 
 const queryClient = new QueryClient();

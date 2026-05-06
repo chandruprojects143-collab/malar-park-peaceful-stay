@@ -534,4 +534,55 @@ const SchemaCard = ({
   );
 };
 
+const DiffPane = ({
+  title,
+  diff,
+  live,
+  mutedIfMissing,
+}: {
+  title: string;
+  diff: DiffLine[];
+  live: string;
+  mutedIfMissing?: boolean;
+}) => {
+  const sum = diffSummary(diff);
+  return (
+    <div className={mutedIfMissing && !live ? "opacity-60" : ""}>
+      <div className="flex items-center justify-between mb-1">
+        <p className="font-medium text-sm">{title}</p>
+        {live ? (
+          <Badge variant={sum.added + sum.removed === 0 ? "default" : "destructive"}>
+            +{sum.added} / −{sum.removed}
+          </Badge>
+        ) : (
+          <Badge variant="outline">no live tag</Badge>
+        )}
+      </div>
+      {!live ? (
+        <p className="text-[11px] text-muted-foreground">
+          Live JSON-LD not in DOM. {mutedIfMissing ? "Toggle to தமிழ் to emit it." : ""}
+        </p>
+      ) : (
+        <pre className="text-[10px] leading-snug overflow-auto max-h-96 bg-muted/40 p-2 rounded-md font-mono">
+          {diff.map((l, i) => (
+            <div
+              key={i}
+              className={
+                l.kind === "add"
+                  ? "bg-green-500/15 text-green-900 dark:text-green-300"
+                  : l.kind === "del"
+                  ? "bg-red-500/15 text-red-900 dark:text-red-300"
+                  : ""
+              }
+            >
+              {l.kind === "add" ? "+ " : l.kind === "del" ? "- " : "  "}
+              {l.text}
+            </div>
+          ))}
+        </pre>
+      )}
+    </div>
+  );
+};
+
 export default SeoPreview;

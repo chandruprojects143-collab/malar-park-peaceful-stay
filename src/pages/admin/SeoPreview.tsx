@@ -6,8 +6,11 @@ import { buildFaqSchema } from "@/components/FAQSection";
 import { useT } from "@/i18n/LanguageContext";
 import { useRooms } from "@/hooks/useRooms";
 import { auditRoomImages, classifyImageUrl } from "@/lib/imageValidation";
+import { buildRoomSeoExpectations, type RoomSeoExpectation } from "@/lib/roomSeoExpectations";
+import { diffLines, diffSummary, type DiffLine } from "@/lib/seoDiff";
+import { downloadSeoReportPdf } from "@/lib/seoPdf";
 import { toast } from "sonner";
-import { Download, PlayCircle } from "lucide-react";
+import { Download, PlayCircle, FileText } from "lucide-react";
 
 const downloadFile = (filename: string, content: string, mime = "application/json") => {
   const blob = new Blob([content], { type: mime });
@@ -20,6 +23,14 @@ const downloadFile = (filename: string, content: string, mime = "application/jso
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 0);
 };
+
+interface RoomMetaCheck {
+  room: string;
+  url: string;
+  expected: RoomSeoExpectation["expected"];
+  warnings: string[];
+  imageIssues: { url: string; kind: string; message: string }[];
+}
 
 interface DiagReport {
   ranAt: string;
@@ -34,6 +45,7 @@ interface DiagReport {
   ogExtras: number;
   twitterImage?: string;
   ogImageIssue?: string;
+  perRoom: RoomMetaCheck[];
 }
 
 const SeoPreview = () => {
@@ -130,10 +142,21 @@ const SeoPreview = () => {
         ogExtras: extras,
         twitterImage: twEl?.content,
         ogImageIssue: ogIssue || undefined,
+        perRoom: buildRoomSeoExpectations(rooms, window.location.origin).map((e) => ({
+          room: e.room,
+          url: e.url,
+          expected: e.expected,
+          warnings: e.metaWarnings,
+          imageIssues: e.imageIssues,
+        })),
       };
       setReport(r);
+      const totalRoomWarnings = r.perRoom.reduce(
+        (n, p) => n + p.warnings.length + p.imageIssues.length,
+        0
+      );
       toast.success(
-        `Diagnostics complete — ${r.totalBadImages} image issue(s), ${r.duplicateScriptIds.length} duplicate(s)`
+        `Diagnostics complete — ${r.totalBadImages} image issue(s), ${r.duplicateScriptIds.length} duplicate(s), ${totalRoomWarnings} room meta warning(s)`
       );
     } finally {
       setRunning(false);
@@ -144,6 +167,33 @@ const SeoPreview = () => {
     if (!report) return;
     downloadFile("seo-diagnostics-report.json", JSON.stringify(report, null, 2));
   };
+
+  const exportPdf = () => {
+    downloadSeoReportPdf({
+      generatedAt: new Date(),
+      activeLang: lang,
+      expectedEn,
+      liveEn: faqEnTags[0] ? JSON.parse(faqEnTags[0].text) : undefined,
+      expectedTa,
+      liveTa: faqTaTags[0] ? JSON.parse(faqTaTags[0].text) : undefined,
+      diagnostics: report ?? undefined,
+    });
+    toast.success("Downloaded SEO PDF report");
+  };
+
+  // Live vs Expected diff
+  const enExpectedStr = JSON.stringify(expectedEn, null, 2);
+  const taExpectedStr = JSON.stringify(expectedTa, null, 2);
+  const enLiveStr = faqEnTags[0] ? JSON.stringify(JSON.parse(faqEnTags[0].text), null, 2) : "";
+  const taLiveStr = faqTaTags[0] ? JSON.stringify(JSON.parse(faqTaTags[0].text), null, 2) : "";
+  const enDiff = useMemo(
+    () => (enLiveStr ? diffLines(enExpectedStr, enLiveStr) : []),
+    [enExpectedStr, enLiveStr]
+  );
+  const taDiff = useMemo(
+    () => (taLiveStr ? diffLines(taExpectedStr, taLiveStr) : []),
+    [taExpectedStr, taLiveStr]
+  );
 
   return (
     <div className="space-y-6">
@@ -186,9 +236,28 @@ const SeoPreview = () => {
           <Button size="sm" variant="outline" onClick={exportLiveTa}>
             <Download className="w-4 h-4 mr-1" /> Live TA
           </Button>
-          <Button size="sm" onClick={exportAll}>
+          <Button size="sm" variant="outline" onClick={exportAll}>
             <Download className="w-4 h-4 mr-1" /> Bundle (all)
           </Button>
+          <Button size="sm" onClick={exportPdf}>
+            <FileText className="w-4 h-4 mr-1" /> Download full PDF
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Live vs Expected diff */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Live vs Expected diff (FAQPage)</CardTitle>
+        </CardHeader>
+        <CardContent className="grid lg:grid-cols-2 gap-4">
+          <DiffPane title="English" diff={enDiff} live={enLiveStr} />
+          <DiffPane
+            title={`Tamil ${lang === "ta" ? "(active)" : "(only emitted in TA mode)"}`}
+            diff={taDiff}
+            live={taLiveStr}
+            mutedIfMissing={lang !== "ta"}
+          />
         </CardContent>
       </Card>
 
@@ -273,6 +342,43 @@ const SeoPreview = () => {
                       </li>
                     ))}
                   </ul>
+                </div>
+              )}
+
+              {report.perRoom.length > 0 && (
+                <div className="border-t pt-3">
+                  <p className="font-medium mb-2">Per-room meta validation</p>
+                  <div className="space-y-2">
+                    {report.perRoom.map((p) => {
+                      const ok = p.warnings.length === 0 && p.imageIssues.length === 0;
+                      return (
+                        <div key={p.room} className="border rounded-md p-2 text-xs">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-medium">{p.room}</span>
+                            <Badge variant={ok ? "default" : "destructive"}>
+                              {ok ? "PASS" : `${p.warnings.length + p.imageIssues.length} issue(s)`}
+                            </Badge>
+                          </div>
+                          <p className="font-mono text-[11px] text-muted-foreground break-all">
+                            {p.url}
+                          </p>
+                          <p className="text-[11px]">title: {p.expected.title}</p>
+                          <p className="text-[11px]">description: {p.expected.description}</p>
+                          <p className="text-[11px] font-mono break-all">
+                            og:image: {p.expected.ogImage || "—"}
+                          </p>
+                          {(p.warnings.length > 0 || p.imageIssues.length > 0) && (
+                            <ul className="mt-1 text-[11px] text-destructive">
+                              {p.warnings.map((w, i) => <li key={`w${i}`}>⚠ {w}</li>)}
+                              {p.imageIssues.map((ii, i) => (
+                                <li key={`i${i}`}>⚠ image ({ii.kind}): {ii.message}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
@@ -425,6 +531,57 @@ const SchemaCard = ({
         )}
       </CardContent>
     </Card>
+  );
+};
+
+const DiffPane = ({
+  title,
+  diff,
+  live,
+  mutedIfMissing,
+}: {
+  title: string;
+  diff: DiffLine[];
+  live: string;
+  mutedIfMissing?: boolean;
+}) => {
+  const sum = diffSummary(diff);
+  return (
+    <div className={mutedIfMissing && !live ? "opacity-60" : ""}>
+      <div className="flex items-center justify-between mb-1">
+        <p className="font-medium text-sm">{title}</p>
+        {live ? (
+          <Badge variant={sum.added + sum.removed === 0 ? "default" : "destructive"}>
+            +{sum.added} / −{sum.removed}
+          </Badge>
+        ) : (
+          <Badge variant="outline">no live tag</Badge>
+        )}
+      </div>
+      {!live ? (
+        <p className="text-[11px] text-muted-foreground">
+          Live JSON-LD not in DOM. {mutedIfMissing ? "Toggle to தமிழ் to emit it." : ""}
+        </p>
+      ) : (
+        <pre className="text-[10px] leading-snug overflow-auto max-h-96 bg-muted/40 p-2 rounded-md font-mono">
+          {diff.map((l, i) => (
+            <div
+              key={i}
+              className={
+                l.kind === "add"
+                  ? "bg-green-500/15 text-green-900 dark:text-green-300"
+                  : l.kind === "del"
+                  ? "bg-red-500/15 text-red-900 dark:text-red-300"
+                  : ""
+              }
+            >
+              {l.kind === "add" ? "+ " : l.kind === "del" ? "- " : "  "}
+              {l.text}
+            </div>
+          ))}
+        </pre>
+      )}
+    </div>
   );
 };
 

@@ -50,6 +50,7 @@ pass("FAQ JSON-LD schemas (en + ta) are well-formed.");
 
 // 3. Per-room SEO expectations — only fatal kinds fail CI; relative URLs are
 // expected at build-time (Vite asset imports) and become absolute when served.
+const expectations = buildRoomSeoExpectations(defaultRooms, ORIGIN);
 const FATAL_KINDS = new Set(["data-url", "blob-url", "empty"]);
 for (const e of expectations) {
   for (const ii of e.imageIssues) {

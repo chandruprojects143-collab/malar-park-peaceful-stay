@@ -236,9 +236,28 @@ const SeoPreview = () => {
           <Button size="sm" variant="outline" onClick={exportLiveTa}>
             <Download className="w-4 h-4 mr-1" /> Live TA
           </Button>
-          <Button size="sm" onClick={exportAll}>
+          <Button size="sm" variant="outline" onClick={exportAll}>
             <Download className="w-4 h-4 mr-1" /> Bundle (all)
           </Button>
+          <Button size="sm" onClick={exportPdf}>
+            <FileText className="w-4 h-4 mr-1" /> Download full PDF
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Live vs Expected diff */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Live vs Expected diff (FAQPage)</CardTitle>
+        </CardHeader>
+        <CardContent className="grid lg:grid-cols-2 gap-4">
+          <DiffPane title="English" diff={enDiff} live={enLiveStr} />
+          <DiffPane
+            title={`Tamil ${lang === "ta" ? "(active)" : "(only emitted in TA mode)"}`}
+            diff={taDiff}
+            live={taLiveStr}
+            mutedIfMissing={lang !== "ta"}
+          />
         </CardContent>
       </Card>
 

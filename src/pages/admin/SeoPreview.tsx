@@ -142,10 +142,21 @@ const SeoPreview = () => {
         ogExtras: extras,
         twitterImage: twEl?.content,
         ogImageIssue: ogIssue || undefined,
+        perRoom: buildRoomSeoExpectations(rooms, window.location.origin).map((e) => ({
+          room: e.room,
+          url: e.url,
+          expected: e.expected,
+          warnings: e.metaWarnings,
+          imageIssues: e.imageIssues,
+        })),
       };
       setReport(r);
+      const totalRoomWarnings = r.perRoom.reduce(
+        (n, p) => n + p.warnings.length + p.imageIssues.length,
+        0
+      );
       toast.success(
-        `Diagnostics complete — ${r.totalBadImages} image issue(s), ${r.duplicateScriptIds.length} duplicate(s)`
+        `Diagnostics complete — ${r.totalBadImages} image issue(s), ${r.duplicateScriptIds.length} duplicate(s), ${totalRoomWarnings} room meta warning(s)`
       );
     } finally {
       setRunning(false);
@@ -156,6 +167,33 @@ const SeoPreview = () => {
     if (!report) return;
     downloadFile("seo-diagnostics-report.json", JSON.stringify(report, null, 2));
   };
+
+  const exportPdf = () => {
+    downloadSeoReportPdf({
+      generatedAt: new Date(),
+      activeLang: lang,
+      expectedEn,
+      liveEn: faqEnTags[0] ? JSON.parse(faqEnTags[0].text) : undefined,
+      expectedTa,
+      liveTa: faqTaTags[0] ? JSON.parse(faqTaTags[0].text) : undefined,
+      diagnostics: report ?? undefined,
+    });
+    toast.success("Downloaded SEO PDF report");
+  };
+
+  // Live vs Expected diff
+  const enExpectedStr = JSON.stringify(expectedEn, null, 2);
+  const taExpectedStr = JSON.stringify(expectedTa, null, 2);
+  const enLiveStr = faqEnTags[0] ? JSON.stringify(JSON.parse(faqEnTags[0].text), null, 2) : "";
+  const taLiveStr = faqTaTags[0] ? JSON.stringify(JSON.parse(faqTaTags[0].text), null, 2) : "";
+  const enDiff = useMemo(
+    () => (enLiveStr ? diffLines(enExpectedStr, enLiveStr) : []),
+    [enExpectedStr, enLiveStr]
+  );
+  const taDiff = useMemo(
+    () => (taLiveStr ? diffLines(taExpectedStr, taLiveStr) : []),
+    [taExpectedStr, taLiveStr]
+  );
 
   return (
     <div className="space-y-6">

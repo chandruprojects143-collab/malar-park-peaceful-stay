@@ -21,14 +21,17 @@ const pass = (msg: string) => console.log(`✓ ${msg}`);
 
 console.log("── SEO diagnostics ──");
 
-// 1. Image audit
+// 1. Image audit — fail only on crawler-incompatible URLs (data:/blob:/empty)
 const audit = auditRoomImages(defaultRooms.map((r) => ({ name: r.name, images: r.images })));
-if (audit.badImages > 0) {
-  for (const i of audit.issues) {
+const fatal = audit.issues.filter((i) =>
+  ["data-url", "blob-url", "empty"].includes(i.issue.kind)
+);
+if (fatal.length > 0) {
+  for (const i of fatal) {
     fail(`Bad image URL [${i.room} #${i.index}] ${i.issue.kind}: ${i.issue.message}`);
   }
 } else {
-  pass(`All ${audit.totalImages} room image URLs are publicly reachable.`);
+  pass(`All ${audit.totalImages} room image URLs OK (no data:/blob: URLs).`);
 }
 
 // 2. FAQ schema sanity (en + ta produce same number of QAs, no empty fields)

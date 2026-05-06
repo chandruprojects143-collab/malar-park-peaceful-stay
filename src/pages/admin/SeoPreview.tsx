@@ -345,6 +345,43 @@ const SeoPreview = () => {
                 </div>
               )}
 
+              {report.perRoom.length > 0 && (
+                <div className="border-t pt-3">
+                  <p className="font-medium mb-2">Per-room meta validation</p>
+                  <div className="space-y-2">
+                    {report.perRoom.map((p) => {
+                      const ok = p.warnings.length === 0 && p.imageIssues.length === 0;
+                      return (
+                        <div key={p.room} className="border rounded-md p-2 text-xs">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-medium">{p.room}</span>
+                            <Badge variant={ok ? "default" : "destructive"}>
+                              {ok ? "PASS" : `${p.warnings.length + p.imageIssues.length} issue(s)`}
+                            </Badge>
+                          </div>
+                          <p className="font-mono text-[11px] text-muted-foreground break-all">
+                            {p.url}
+                          </p>
+                          <p className="text-[11px]">title: {p.expected.title}</p>
+                          <p className="text-[11px]">description: {p.expected.description}</p>
+                          <p className="text-[11px] font-mono break-all">
+                            og:image: {p.expected.ogImage || "—"}
+                          </p>
+                          {(p.warnings.length > 0 || p.imageIssues.length > 0) && (
+                            <ul className="mt-1 text-[11px] text-destructive">
+                              {p.warnings.map((w, i) => <li key={`w${i}`}>⚠ {w}</li>)}
+                              {p.imageIssues.map((ii, i) => (
+                                <li key={`i${i}`}>⚠ image ({ii.kind}): {ii.message}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <p className="text-[11px] text-muted-foreground">
                 Ran at {new Date(report.ranAt).toLocaleString()}
               </p>

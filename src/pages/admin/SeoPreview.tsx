@@ -6,8 +6,11 @@ import { buildFaqSchema } from "@/components/FAQSection";
 import { useT } from "@/i18n/LanguageContext";
 import { useRooms } from "@/hooks/useRooms";
 import { auditRoomImages, classifyImageUrl } from "@/lib/imageValidation";
+import { buildRoomSeoExpectations, type RoomSeoExpectation } from "@/lib/roomSeoExpectations";
+import { diffLines, diffSummary, type DiffLine } from "@/lib/seoDiff";
+import { downloadSeoReportPdf } from "@/lib/seoPdf";
 import { toast } from "sonner";
-import { Download, PlayCircle } from "lucide-react";
+import { Download, PlayCircle, FileText } from "lucide-react";
 
 const downloadFile = (filename: string, content: string, mime = "application/json") => {
   const blob = new Blob([content], { type: mime });
@@ -20,6 +23,14 @@ const downloadFile = (filename: string, content: string, mime = "application/jso
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 0);
 };
+
+interface RoomMetaCheck {
+  room: string;
+  url: string;
+  expected: RoomSeoExpectation["expected"];
+  warnings: string[];
+  imageIssues: { url: string; kind: string; message: string }[];
+}
 
 interface DiagReport {
   ranAt: string;
@@ -34,6 +45,7 @@ interface DiagReport {
   ogExtras: number;
   twitterImage?: string;
   ogImageIssue?: string;
+  perRoom: RoomMetaCheck[];
 }
 
 const SeoPreview = () => {

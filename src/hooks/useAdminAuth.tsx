@@ -23,11 +23,13 @@ interface AuthContextType {
 const ACCESS_MAP: Record<UserRole, string[]> = {
   admin: [
     'dashboard', 'reception', 'rooms', 'room-prices', 'collection', 'expenses',
-    'staff', 'laundry', 'maintenance', 'staff-payments', 'bills', 'utilities', 'reports', 'room-photos', 'gallery-photos', 'availability'
+    'staff', 'laundry', 'maintenance', 'staff-payments', 'bills', 'utilities', 'reports',
+    'room-photos', 'gallery-photos', 'availability', 'content'
   ],
   reception: ['dashboard', 'reception', 'rooms', 'collection', 'laundry'],
   housekeeping: ['rooms', 'maintenance'],
 };
+
 
 const AuthContext = createContext<AuthContextType | null>(null);
 

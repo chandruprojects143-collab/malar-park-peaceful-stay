@@ -27,7 +27,17 @@ import GalleryPhotos from "./pages/admin/GalleryPhotos.tsx";
 import AvailabilityManager from "./pages/admin/AvailabilityManager.tsx";
 import AvailabilitySummary from "./pages/admin/AvailabilitySummary.tsx";
 import SeoPreview from "./pages/admin/SeoPreview.tsx";
+import HeroManager from "./pages/admin/HeroManager.tsx";
+import AmenitiesManager from "./pages/admin/AmenitiesManager.tsx";
+import ReviewsManager from "./pages/admin/ReviewsManager.tsx";
+import FaqManager from "./pages/admin/FaqManager.tsx";
+import AttractionsManager from "./pages/admin/AttractionsManager.tsx";
+import OtaLinksManager from "./pages/admin/OtaLinksManager.tsx";
+import NavManager from "./pages/admin/NavManager.tsx";
+import SeoManager from "./pages/admin/SeoManager.tsx";
+import MediaLibrary from "./pages/admin/MediaLibrary.tsx";
 import RoomDetail from "./pages/RoomDetail.tsx";
+
 
 const queryClient = new QueryClient();
 
@@ -62,6 +72,16 @@ const App = () => (
               <Route path="availability" element={<AvailabilityManager />} />
               <Route path="availability-summary" element={<AvailabilitySummary />} />
               <Route path="seo-preview" element={<SeoPreview />} />
+              <Route path="hero" element={<HeroManager />} />
+              <Route path="amenities" element={<AmenitiesManager />} />
+              <Route path="cms-reviews" element={<ReviewsManager />} />
+              <Route path="faqs" element={<FaqManager />} />
+              <Route path="attractions" element={<AttractionsManager />} />
+              <Route path="ota-links" element={<OtaLinksManager />} />
+              <Route path="nav" element={<NavManager />} />
+              <Route path="seo-pages" element={<SeoManager />} />
+              <Route path="media" element={<MediaLibrary />} />
+
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

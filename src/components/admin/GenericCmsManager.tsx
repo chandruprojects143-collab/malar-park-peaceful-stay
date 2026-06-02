@@ -27,14 +27,15 @@ interface Props {
 
 export default function GenericCmsManager({ table, title, fields, defaults = {}, rowTitle, rowSubtitle, rowImage }: Props) {
   const qc = useQueryClient();
-  const { data: rows = [], isLoading } = useQuery({
+  const { data: rows = [], isLoading } = useQuery<any[]>({
     queryKey: [table, "admin"],
     queryFn: async () => {
-      const { data, error } = await supabase.from(table as any).select("*").order("sort", { ascending: true });
+      const { data, error } = await (supabase.from(table as any) as any).select("*").order("sort", { ascending: true });
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []) as any[];
     },
   });
+
   const mut = useCmsMutation(table);
   const [editing, setEditing] = useState<any | null>(null);
 

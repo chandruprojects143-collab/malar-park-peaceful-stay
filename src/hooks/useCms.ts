@@ -3,16 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { adminWrite } from "@/lib/adminWrite";
 
 const list = <T,>(table: string, opts: { onlyEnabled?: boolean; orderBy?: string } = {}) =>
-  useQuery({
+  useQuery<T[]>({
     queryKey: [table, opts],
     queryFn: async () => {
-      let q: any = supabase.from(table as any).select("*");
+      let q: any = (supabase.from(table as any) as any).select("*");
       if (opts.orderBy) q = q.order(opts.orderBy, { ascending: true });
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as T[];
     },
   });
+
 
 export const useHeroSlides = () => list<any>("hero_slides", { orderBy: "sort" });
 export const useAmenitiesDb = () => list<any>("amenities", { orderBy: "sort" });

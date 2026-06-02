@@ -14,7 +14,442 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      amenities: {
+        Row: {
+          created_at: string
+          description: string | null
+          enabled: boolean
+          icon: string
+          id: string
+          sort: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          icon?: string
+          id?: string
+          sort?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          icon?: string
+          id?: string
+          sort?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      attractions: {
+        Row: {
+          created_at: string
+          description: string | null
+          distance: string | null
+          enabled: boolean
+          id: string
+          image_url: string | null
+          maps_url: string | null
+          name: string
+          sort: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          distance?: string | null
+          enabled?: boolean
+          id?: string
+          image_url?: string | null
+          maps_url?: string | null
+          name: string
+          sort?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          distance?: string | null
+          enabled?: boolean
+          id?: string
+          image_url?: string | null
+          maps_url?: string | null
+          name?: string
+          sort?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      faq_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          sort: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          sort?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          sort?: number
+        }
+        Relationships: []
+      }
+      faqs: {
+        Row: {
+          answer_html: string
+          category_id: string | null
+          created_at: string
+          enabled: boolean
+          id: string
+          question: string
+          sort: number
+          updated_at: string
+        }
+        Insert: {
+          answer_html?: string
+          category_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          question: string
+          sort?: number
+          updated_at?: string
+        }
+        Update: {
+          answer_html?: string
+          category_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          question?: string
+          sort?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faqs_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "faq_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hero_slides: {
+        Row: {
+          created_at: string
+          cta_href: string | null
+          cta_label: string | null
+          enabled: boolean
+          id: string
+          image_url: string
+          sort: number
+          subtitle: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cta_href?: string | null
+          cta_label?: string | null
+          enabled?: boolean
+          id?: string
+          image_url: string
+          sort?: number
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cta_href?: string | null
+          cta_label?: string | null
+          enabled?: boolean
+          id?: string
+          image_url?: string
+          sort?: number
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      media: {
+        Row: {
+          content_type: string | null
+          created_at: string
+          folder: string
+          id: string
+          name: string
+          path: string
+          size: number | null
+          url: string
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string
+          folder?: string
+          id?: string
+          name: string
+          path: string
+          size?: number | null
+          url: string
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string
+          folder?: string
+          id?: string
+          name?: string
+          path?: string
+          size?: number | null
+          url?: string
+        }
+        Relationships: []
+      }
+      nav_items: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          href: string
+          id: string
+          label: string
+          sort: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          href: string
+          id?: string
+          label: string
+          sort?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          href?: string
+          id?: string
+          label?: string
+          sort?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ota_links: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          logo_url: string | null
+          platform: string
+          sort: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          logo_url?: string | null
+          platform: string
+          sort?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          logo_url?: string | null
+          platform?: string
+          sort?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          country: string | null
+          created_at: string
+          enabled: boolean
+          featured: boolean
+          guest_name: string
+          id: string
+          rating: number
+          sort: number
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          enabled?: boolean
+          featured?: boolean
+          guest_name: string
+          id?: string
+          rating?: number
+          sort?: number
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          enabled?: boolean
+          featured?: boolean
+          guest_name?: string
+          id?: string
+          rating?: number
+          sort?: number
+          text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      room_amenities: {
+        Row: {
+          amenity_id: string
+          room_id: string
+        }
+        Insert: {
+          amenity_id: string
+          room_id: string
+        }
+        Update: {
+          amenity_id?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_amenities_amenity_id_fkey"
+            columns: ["amenity_id"]
+            isOneToOne: false
+            referencedRelation: "amenities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "room_amenities_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_images: {
+        Row: {
+          created_at: string
+          id: string
+          room_id: string
+          sort: number
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          room_id: string
+          sort?: number
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          room_id?: string
+          sort?: number
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_images_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          created_at: string
+          description: string | null
+          enabled: boolean
+          id: string
+          name: string
+          price: number | null
+          slug: string
+          sort: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name: string
+          price?: number | null
+          slug: string
+          sort?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name?: string
+          price?: number | null
+          slug?: string
+          sort?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      seo_pages: {
+        Row: {
+          canonical: string | null
+          description: string | null
+          keywords: string | null
+          og_image: string | null
+          page_key: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          canonical?: string | null
+          description?: string | null
+          keywords?: string | null
+          og_image?: string | null
+          page_key: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          canonical?: string | null
+          description?: string | null
+          keywords?: string | null
+          og_image?: string | null
+          page_key?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

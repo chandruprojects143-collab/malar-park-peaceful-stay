@@ -27,8 +27,11 @@ const Harness = () => {
 
 const renderHarness = () => {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return renderHarness();
+  return render(
     <QueryClientProvider client={qc}>
+      <LanguageProvider>
+        <Harness />
+      </LanguageProvider>
     </QueryClientProvider>
   );
 };
@@ -43,26 +46,21 @@ beforeEach(() => {
 describe("FAQSection JSON-LD lifecycle on language toggle", () => {
   it("emits exactly one EN tag, no TA tag in EN mode", () => {
     renderHarness();
-    );
     expect(countScripts("jsonld-faq-en")).toBe(1);
     expect(countScripts("jsonld-faq-ta")).toBe(0);
   });
 
   it("toggles to TA: exactly one EN + one TA, no duplicates", () => {
     renderHarness();
-    );
     act(() => toggleFn()); // → ta
     expect(countScripts("jsonld-faq-en")).toBe(1);
     expect(countScripts("jsonld-faq-ta")).toBe(1);
-    // No stale duplicates of any id
     const ids = allFaqIds();
-    const set = new Set(ids);
-    expect(ids.length).toBe(set.size);
+    expect(ids.length).toBe(new Set(ids).size);
   });
 
   it("toggles back to EN: TA tag is fully removed, no stale residue", () => {
     renderHarness();
-    );
     act(() => toggleFn()); // → ta
     act(() => toggleFn()); // → en
     expect(countScripts("jsonld-faq-en")).toBe(1);
@@ -71,11 +69,9 @@ describe("FAQSection JSON-LD lifecycle on language toggle", () => {
 
   it("rapid 5x toggle cycle never accumulates stale or duplicate scripts", () => {
     renderHarness();
-    );
     for (let i = 0; i < 5; i++) {
       act(() => toggleFn());
     }
-    // After 5 toggles starting from en: en→ta→en→ta→en→ta = ta
     expect(countScripts("jsonld-faq-en")).toBe(1);
     expect(countScripts("jsonld-faq-ta")).toBe(1);
     const ids = allFaqIds();

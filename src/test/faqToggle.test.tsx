@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { render, act } from "@testing-library/react";
 import FAQSection from "@/components/FAQSection";
 import { LanguageProvider, useT } from "@/i18n/LanguageContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const countScripts = (id: string) =>
   document.head.querySelectorAll(`script#${id}`).length;
@@ -24,6 +25,17 @@ const Harness = () => {
   );
 };
 
+const renderHarness = () => {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={qc}>
+      <LanguageProvider>
+        <Harness />
+      </LanguageProvider>
+    </QueryClientProvider>
+  );
+};
+
 beforeEach(() => {
   localStorage.clear();
   document.head
@@ -33,36 +45,22 @@ beforeEach(() => {
 
 describe("FAQSection JSON-LD lifecycle on language toggle", () => {
   it("emits exactly one EN tag, no TA tag in EN mode", () => {
-    render(
-      <LanguageProvider>
-        <Harness />
-      </LanguageProvider>
-    );
+    renderHarness();
     expect(countScripts("jsonld-faq-en")).toBe(1);
     expect(countScripts("jsonld-faq-ta")).toBe(0);
   });
 
   it("toggles to TA: exactly one EN + one TA, no duplicates", () => {
-    render(
-      <LanguageProvider>
-        <Harness />
-      </LanguageProvider>
-    );
+    renderHarness();
     act(() => toggleFn()); // → ta
     expect(countScripts("jsonld-faq-en")).toBe(1);
     expect(countScripts("jsonld-faq-ta")).toBe(1);
-    // No stale duplicates of any id
     const ids = allFaqIds();
-    const set = new Set(ids);
-    expect(ids.length).toBe(set.size);
+    expect(ids.length).toBe(new Set(ids).size);
   });
 
   it("toggles back to EN: TA tag is fully removed, no stale residue", () => {
-    render(
-      <LanguageProvider>
-        <Harness />
-      </LanguageProvider>
-    );
+    renderHarness();
     act(() => toggleFn()); // → ta
     act(() => toggleFn()); // → en
     expect(countScripts("jsonld-faq-en")).toBe(1);
@@ -70,15 +68,10 @@ describe("FAQSection JSON-LD lifecycle on language toggle", () => {
   });
 
   it("rapid 5x toggle cycle never accumulates stale or duplicate scripts", () => {
-    render(
-      <LanguageProvider>
-        <Harness />
-      </LanguageProvider>
-    );
+    renderHarness();
     for (let i = 0; i < 5; i++) {
       act(() => toggleFn());
     }
-    // After 5 toggles starting from en: en→ta→en→ta→en→ta = ta
     expect(countScripts("jsonld-faq-en")).toBe(1);
     expect(countScripts("jsonld-faq-ta")).toBe(1);
     const ids = allFaqIds();

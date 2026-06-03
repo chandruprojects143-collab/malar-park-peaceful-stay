@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { render, act } from "@testing-library/react";
 import FAQSection from "@/components/FAQSection";
 import { LanguageProvider, useT } from "@/i18n/LanguageContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const countScripts = (id: string) =>
   document.head.querySelectorAll(`script#${id}`).length;
@@ -21,6 +22,17 @@ const Harness = () => {
     <div data-lang={lang}>
       <FAQSection />
     </div>
+  );
+};
+
+const renderHarness = () => {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={qc}>
+      <LanguageProvider>
+        <Harness />
+      </LanguageProvider>
+    </QueryClientProvider>
   );
 };
 

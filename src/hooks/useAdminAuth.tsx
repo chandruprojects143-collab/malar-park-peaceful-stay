@@ -32,7 +32,7 @@ async function fetchRole(userId: string): Promise<AppRole | null> {
     .from('user_roles' as any)
     .select('role')
     .eq('user_id', userId);
-  const roles = ((data ?? []) as { role: AppRole }[]).map(r => r.role);
+  const roles = ((data ?? []) as unknown as { role: AppRole }[]).map(r => r.role);
   if (roles.includes('owner')) return 'owner';
   if (roles.includes('admin')) return 'admin';
   if (roles.includes('staff')) return 'staff';

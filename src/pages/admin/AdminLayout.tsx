@@ -4,13 +4,28 @@ import { ArrowLeft, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const AdminLayout = () => {
-  const { user, logout } = useAdminAuth();
+  const { user, loading, logout } = useAdminAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading…</div>;
+  }
   if (!user) return <Navigate to="/admin/login" replace />;
+  if (!user.role) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <h2 className="text-xl font-semibold">No role assigned</h2>
+        <p className="text-muted-foreground max-w-md">
+          Your account ({user.email}) is signed in but has no role yet. Ask the Owner to grant you access.
+        </p>
+        <Button variant="outline" onClick={logout}>Sign out</Button>
+      </div>
+    );
+  }
 
   const isRoot = location.pathname === '/admin';
+  const roleLabel = user.role === 'owner' ? 'Owner' : user.role === 'admin' ? 'Admin' : 'Staff';
 
   return (
     <div className="min-h-screen flex flex-col w-full bg-background">
@@ -21,7 +36,7 @@ const AdminLayout = () => {
               <ArrowLeft className="h-4 w-4" />
             </Button>
           )}
-          <span className="text-sm font-medium text-muted-foreground">🏨 Malar Park Admin — {user.name}</span>
+          <span className="text-sm font-medium text-muted-foreground">🏨 Malar Park {roleLabel} — {user.name}</span>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" asChild>

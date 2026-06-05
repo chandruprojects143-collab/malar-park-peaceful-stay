@@ -25,8 +25,13 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
       <div className="container mx-auto flex items-center justify-between py-3 px-4">
-        <a href="#home" className="font-heading text-2xl font-bold text-primary">
-          Malar Park
+        <a href="#home" className="flex items-center gap-3">
+          <img
+            src="/malar_park_logo-removebg.png"
+            alt="Malar Park"
+            className="h-10 w-auto object-contain"
+          />
+          <span className="font-heading text-2xl font-bold text-primary">Malar Park</span>
         </a>
         <div className="hidden lg:flex items-center gap-6">
           {navLinks.map((l) => (

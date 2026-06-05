@@ -1,10 +1,16 @@
 import { supabase } from "@/integrations/supabase/client";
 
-// Legacy helpers kept as no-ops for backwards compatibility.
-// Authentication is now handled by Supabase Auth + RLS — no shared password.
-export function setAdminWritePassword(_pw: string) {}
-export function getAdminWritePassword(): string | null { return "authenticated"; }
-export function clearAdminWritePassword() {}
+const ADMIN_PW_KEY = "admin_write_password";
+
+export function setAdminWritePassword(pw: string) {
+  sessionStorage.setItem(ADMIN_PW_KEY, pw);
+}
+export function getAdminWritePassword(): string | null {
+  return sessionStorage.getItem(ADMIN_PW_KEY);
+}
+export function clearAdminWritePassword() {
+  sessionStorage.removeItem(ADMIN_PW_KEY);
+}
 
 type Op = "insert" | "update" | "upsert" | "delete";
 interface WriteArgs {
@@ -15,26 +21,14 @@ interface WriteArgs {
   onConflict?: string;
 }
 
-/**
- * Writes to CMS tables via the standard Supabase client.
- * RLS policies enforce that only signed-in users with the `owner` role may write.
- */
-export async function adminWrite({ table, op, values, match, onConflict }: WriteArgs) {
-  const q: any = (supabase.from(table as any) as any);
-  let res;
-  if (op === "insert") res = await q.insert(values).select();
-  else if (op === "upsert") res = await q.upsert(values, onConflict ? { onConflict } : undefined).select();
-  else if (op === "update") {
-    let upd = q.update(values);
-    for (const [k, v] of Object.entries(match ?? {})) upd = upd.eq(k, v);
-    res = await upd.select();
-  } else if (op === "delete") {
-    let del = q.delete();
-    for (const [k, v] of Object.entries(match ?? {})) del = del.eq(k, v);
-    res = await del.select();
-  } else {
-    throw new Error("Bad op");
-  }
-  if (res.error) throw new Error(res.error.message);
-  return res.data;
+export async function adminWrite(args: WriteArgs) {
+  const pw = getAdminWritePassword();
+  if (!pw) throw new Error("Admin write password not set. Open SEO/CMS admin and enter it once.");
+  const { data, error } = await supabase.functions.invoke("admin-write", {
+    body: args,
+    headers: { "x-admin-password": pw },
+  });
+  if (error) throw error;
+  if ((data as any)?.error) throw new Error((data as any).error);
+  return (data as any)?.data;
 }

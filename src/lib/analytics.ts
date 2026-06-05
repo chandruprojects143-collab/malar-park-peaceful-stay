@@ -56,8 +56,7 @@ export const appendUtm = (url: string, utm: Utm) => {
 
 export const DIRECTIONS_BASE =
   'https://www.google.com/maps/dir/?api=1&destination=Malar+Park,+Tiruvannamalai&destination_place_id=ChIJ_VHwFwDBrDsR6-KLVPQOLw4';
-export const REVIEWS_BASE =
-  'https://search.google.com/local/writereview?placeid=ChIJ_VHwFwDBrDsR6-KLVPQOLw4';
+export const REVIEWS_BASE = 'https://g.page/r/Cevii1T0Di_hEBE/review';
 export const GBP_PROFILE_BASE = 'https://maps.app.goo.gl/EZeSjsNZx1Tck3zY6';
 
 export const buildDirectionsHref = (utm: Utm) => appendUtm(DIRECTIONS_BASE, utm);

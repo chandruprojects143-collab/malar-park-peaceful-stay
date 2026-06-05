@@ -175,14 +175,14 @@ export const RoomCard = ({ room }: { room: DisplayRoom }) => {
           </div>
         ))}
       </div>
-      <div className="flex gap-2">
-        <Link to={`/rooms/${slugify(room.name)}`} className="flex-1" onClick={() => trackEvent("room_view_details", { room: room.name })}>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <Link to={`/rooms/${slugify(room.name)}`} className="flex-1 min-w-0" onClick={() => trackEvent("room_view_details", { room: room.name })}>
           <Button variant="outline" className="w-full" size="sm">{t("cta.viewDetails")}</Button>
         </Link>
-        <a href="#booking" className="flex-1" onClick={() => trackEvent("room_book_click", { room: room.name })}>
+        <a href="#booking" className="flex-1 min-w-0" onClick={() => trackEvent("room_book_click", { room: room.name })}>
           <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" size="sm">{t("cta.book")}</Button>
         </a>
-        <a href={wa} target="_blank" rel="noopener noreferrer" className="flex-1"
+        <a href={wa} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-0"
           onClick={() => trackEvent("room_whatsapp_click", { room: room.name })}>
           <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground" size="sm">
             <MessageCircle className="w-3.5 h-3.5 mr-1" />{t("cta.whatsapp")}

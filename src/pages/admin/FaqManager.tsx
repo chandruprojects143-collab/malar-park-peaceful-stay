@@ -159,7 +159,7 @@ function Manager() {
     if (duplicate) return toast.error("A FAQ with this question already exists");
 
     try {
-      const payload: any = { question, answer_html: answer, enabled: editing.enabled ?? true, sort: editing.sort ?? 0 };
+      const payload: any = { question, answer_html: answer, enabled: editing.enabled ?? true, sort: editing.sort ?? 0, category_id: editing.category_id ?? null };
       if (editing.id) {
         await mut.mutateAsync({ op: "update", values: payload, match: { id: editing.id } });
       } else {

@@ -326,6 +326,17 @@ function Manager() {
                 rows={6}
               />
             </div>
+            <div>
+              <Label>Category</Label>
+              <select
+                value={editing.category_id ?? ""}
+                onChange={e => setEditing({ ...editing, category_id: e.target.value || null })}
+                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="">Uncategorized</option>
+                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
             <div className="flex items-center gap-2">
               <Switch
                 checked={editing.enabled ?? true}

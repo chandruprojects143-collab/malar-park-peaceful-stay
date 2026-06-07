@@ -12,7 +12,9 @@ import {
 } from '@/components/ui/sidebar';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
-const menuItems = [
+type MenuItem = { title: string; url: string; icon: any; module: string };
+
+const operationsItems: MenuItem[] = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, module: 'dashboard' },
   { title: 'Reception', url: '/admin/reception', icon: ClipboardList, module: 'reception' },
   { title: 'Room Status', url: '/admin/rooms', icon: BedDouble, module: 'rooms' },
@@ -26,19 +28,22 @@ const menuItems = [
   { title: 'Staff', url: '/admin/staff', icon: Users, module: 'staff' },
   { title: 'Utilities', url: '/admin/utilities', icon: Zap, module: 'utilities' },
   { title: 'Reports', url: '/admin/reports', icon: BarChart3, module: 'reports' },
-  { title: 'Room Photos', url: '/admin/room-photos', icon: Image, module: 'room-photos' },
-  { title: 'Gallery Photos', url: '/admin/gallery-photos', icon: Image, module: 'gallery-photos' },
   { title: 'Availability', url: '/admin/availability', icon: CalendarDays, module: 'availability' },
   { title: 'Avail. Summary', url: '/admin/availability-summary', icon: Gauge, module: 'availability' },
-  { title: 'SEO Preview', url: '/admin/seo-preview', icon: Search, module: 'availability' },
+];
+
+const ownerItems: MenuItem[] = [
+  { title: 'FAQ Management', url: '/admin/faqs', icon: HelpCircle, module: 'content' },
   { title: 'Hero Slides', url: '/admin/hero', icon: Layers, module: 'content' },
   { title: 'Amenities CMS', url: '/admin/amenities', icon: Sparkles, module: 'content' },
   { title: 'Reviews CMS', url: '/admin/cms-reviews', icon: MessageSquareQuote, module: 'content' },
-  { title: 'FAQ Management', url: '/admin/faqs', icon: HelpCircle, module: 'content' },
   { title: 'Attractions', url: '/admin/attractions', icon: MapPin, module: 'content' },
   { title: 'OTA Links', url: '/admin/ota-links', icon: Link2, module: 'content' },
   { title: 'Navigation', url: '/admin/nav', icon: Menu, module: 'content' },
+  { title: 'Room Photos', url: '/admin/room-photos', icon: Image, module: 'room-photos' },
+  { title: 'Gallery Photos', url: '/admin/gallery-photos', icon: Image, module: 'gallery-photos' },
   { title: 'SEO Pages', url: '/admin/seo-pages', icon: FileCode2, module: 'content' },
+  { title: 'SEO Preview', url: '/admin/seo-preview', icon: Search, module: 'availability' },
   { title: 'Media Library', url: '/admin/media', icon: FolderOpen, module: 'content' },
 ];
 

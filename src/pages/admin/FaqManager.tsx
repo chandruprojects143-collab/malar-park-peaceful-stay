@@ -258,6 +258,18 @@ function Manager() {
                 <X className="w-4 h-4" /> Cancel
               </Button>
             </div>
+            {(editing.question || editing.answer_html) && (
+              <div className="mt-4 border-t pt-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Live Website Preview</p>
+                <div className="rounded-md border bg-card p-4">
+                  <p className="font-medium text-foreground">▼ {editing.question || "Your question…"}</p>
+                  <div
+                    className="text-sm text-muted-foreground mt-2"
+                    dangerouslySetInnerHTML={{ __html: editing.answer_html || "<em>Your answer will appear here…</em>" }}
+                  />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

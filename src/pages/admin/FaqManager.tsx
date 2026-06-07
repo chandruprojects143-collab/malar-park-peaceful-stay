@@ -76,10 +76,13 @@ function SortableRow({ faq, onEdit, onDelete, onToggle }: {
 function Manager() {
   const qc = useQueryClient();
   const mut = useCmsMutation("faqs");
+  const catMut = useCmsMutation("faq_categories");
   const [editing, setEditing] = useState<Partial<Faq> | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Faq | null>(null);
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<"all" | "active" | "inactive">("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [newCatName, setNewCatName] = useState("");
 
   const { data: rows = [], isLoading } = useQuery<Faq[]>({
     queryKey: ["faqs", "admin"],
@@ -89,6 +92,39 @@ function Manager() {
       return (data ?? []) as Faq[];
     },
   });
+
+  const { data: categories = [] } = useQuery<FaqCategory[]>({
+    queryKey: ["faq_categories", "admin"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("faq_categories").select("*").order("sort", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as FaqCategory[];
+    },
+  });
+
+  const catName = (id?: string | null) => categories.find(c => c.id === id)?.name ?? "Uncategorized";
+
+  const addCategory = async () => {
+    const name = newCatName.trim();
+    if (!name) return;
+    if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+      return toast.error("Category already exists");
+    }
+    try {
+      await catMut.mutateAsync({ op: "insert", values: { name, sort: categories.length * 10 } });
+      qc.invalidateQueries({ queryKey: ["faq_categories"] });
+      setNewCatName("");
+      toast.success("Category added");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  const deleteCategory = async (id: string) => {
+    try {
+      await catMut.mutateAsync({ op: "delete", match: { id } });
+      qc.invalidateQueries({ queryKey: ["faq_categories"] });
+      toast.success("Category deleted");
+    } catch (e: any) { toast.error(e.message); }
+  };
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();

@@ -183,6 +183,21 @@ function Manager() {
         <Button onClick={startNew} className="gap-2"><Plus className="w-4 h-4" /> Add New Question</Button>
       </div>
 
+      <div className="grid grid-cols-3 gap-3">
+        <Card><CardContent className="py-4 text-center">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">Total FAQs</p>
+          <p className="text-2xl font-heading text-primary">{rows.length}</p>
+        </CardContent></Card>
+        <Card><CardContent className="py-4 text-center">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">Active</p>
+          <p className="text-2xl font-heading text-primary">{rows.filter(r => r.enabled).length}</p>
+        </CardContent></Card>
+        <Card><CardContent className="py-4 text-center">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">Hidden</p>
+          <p className="text-2xl font-heading text-muted-foreground">{rows.filter(r => !r.enabled).length}</p>
+        </CardContent></Card>
+      </div>
+
       <Card>
         <CardContent className="py-4 flex flex-col md:flex-row gap-3 md:items-center justify-between">
           <div className="relative flex-1 max-w-md">

@@ -57,7 +57,10 @@ function SortableRow({ faq, categoryName, onEdit, onDelete, onToggle }: {
           <GripVertical className="w-4 h-4" />
         </button>
         <div className="flex-1 min-w-0">
-          <p className="font-medium truncate">{faq.question}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-medium truncate">{faq.question}</p>
+            <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded bg-muted text-muted-foreground shrink-0">{categoryName}</span>
+          </div>
           <p className="text-xs text-muted-foreground line-clamp-1">
             {faq.answer_html?.replace(/<[^>]+>/g, "").slice(0, 120)}
           </p>

@@ -335,6 +335,7 @@ function Manager() {
               <SortableRow
                 key={f.id}
                 faq={f}
+                categoryName={catName(f.category_id)}
                 onEdit={setEditing}
                 onDelete={setDeleteTarget}
                 onToggle={toggle}

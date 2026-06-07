@@ -31,10 +31,14 @@ interface Faq {
   answer_html: string;
   sort: number;
   enabled: boolean;
+  category_id?: string | null;
 }
 
-function SortableRow({ faq, onEdit, onDelete, onToggle }: {
+interface FaqCategory { id: string; name: string; sort: number; }
+
+function SortableRow({ faq, categoryName, onEdit, onDelete, onToggle }: {
   faq: Faq;
+  categoryName: string;
   onEdit: (f: Faq) => void;
   onDelete: (f: Faq) => void;
   onToggle: (f: Faq) => void;
@@ -53,7 +57,10 @@ function SortableRow({ faq, onEdit, onDelete, onToggle }: {
           <GripVertical className="w-4 h-4" />
         </button>
         <div className="flex-1 min-w-0">
-          <p className="font-medium truncate">{faq.question}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-medium truncate">{faq.question}</p>
+            <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded bg-muted text-muted-foreground shrink-0">{categoryName}</span>
+          </div>
           <p className="text-xs text-muted-foreground line-clamp-1">
             {faq.answer_html?.replace(/<[^>]+>/g, "").slice(0, 120)}
           </p>
@@ -73,10 +80,13 @@ function SortableRow({ faq, onEdit, onDelete, onToggle }: {
 function Manager() {
   const qc = useQueryClient();
   const mut = useCmsMutation("faqs");
+  const catMut = useCmsMutation("faq_categories");
   const [editing, setEditing] = useState<Partial<Faq> | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Faq | null>(null);
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<"all" | "active" | "inactive">("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [newCatName, setNewCatName] = useState("");
 
   const { data: rows = [], isLoading } = useQuery<Faq[]>({
     queryKey: ["faqs", "admin"],
@@ -87,15 +97,52 @@ function Manager() {
     },
   });
 
+  const { data: categories = [] } = useQuery<FaqCategory[]>({
+    queryKey: ["faq_categories", "admin"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("faq_categories").select("*").order("sort", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as FaqCategory[];
+    },
+  });
+
+  const catName = (id?: string | null) => categories.find(c => c.id === id)?.name ?? "Uncategorized";
+
+  const addCategory = async () => {
+    const name = newCatName.trim();
+    if (!name) return;
+    if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+      return toast.error("Category already exists");
+    }
+    try {
+      await catMut.mutateAsync({ op: "insert", values: { name, sort: categories.length * 10 } });
+      qc.invalidateQueries({ queryKey: ["faq_categories"] });
+      setNewCatName("");
+      toast.success("Category added");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  const deleteCategory = async (id: string) => {
+    try {
+      await catMut.mutateAsync({ op: "delete", match: { id } });
+      qc.invalidateQueries({ queryKey: ["faq_categories"] });
+      toast.success("Category deleted");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return rows.filter(r => {
       if (tab === "active" && !r.enabled) return false;
       if (tab === "inactive" && r.enabled) return false;
+      if (categoryFilter !== "all") {
+        if (categoryFilter === "none" && r.category_id) return false;
+        if (categoryFilter !== "none" && r.category_id !== categoryFilter) return false;
+      }
       if (!q) return true;
       return (r.question + " " + (r.answer_html || "")).toLowerCase().includes(q);
     });
-  }, [rows, search, tab]);
+  }, [rows, search, tab, categoryFilter]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -116,7 +163,7 @@ function Manager() {
     if (duplicate) return toast.error("A FAQ with this question already exists");
 
     try {
-      const payload: any = { question, answer_html: answer, enabled: editing.enabled ?? true, sort: editing.sort ?? 0 };
+      const payload: any = { question, answer_html: answer, enabled: editing.enabled ?? true, sort: editing.sort ?? 0, category_id: editing.category_id ?? null };
       if (editing.id) {
         await mut.mutateAsync({ op: "update", values: payload, match: { id: editing.id } });
       } else {
@@ -209,6 +256,15 @@ function Manager() {
               className="pl-9"
             />
           </div>
+          <select
+            value={categoryFilter}
+            onChange={e => setCategoryFilter(e.target.value)}
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            <option value="all">All categories</option>
+            <option value="none">Uncategorized</option>
+            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
           <Tabs value={tab} onValueChange={v => setTab(v as any)}>
             <TabsList>
               <TabsTrigger value="all">All ({rows.length})</TabsTrigger>
@@ -216,6 +272,33 @@ function Manager() {
               <TabsTrigger value="inactive">Inactive ({rows.filter(r => !r.enabled).length})</TabsTrigger>
             </TabsList>
           </Tabs>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="text-sm">FAQ Categories</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap gap-2">
+            {categories.length === 0 && <span className="text-sm text-muted-foreground">No categories yet.</span>}
+            {categories.map(c => (
+              <span key={c.id} className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-muted">
+                {c.name}
+                <button onClick={() => deleteCategory(c.id)} className="text-destructive hover:opacity-70" aria-label={`Delete ${c.name}`}>
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Input
+              value={newCatName}
+              onChange={e => setNewCatName(e.target.value)}
+              placeholder="New category name (e.g. Booking, Amenities)"
+              onKeyDown={e => e.key === "Enter" && addCategory()}
+              className="max-w-sm"
+            />
+            <Button onClick={addCategory} variant="secondary" className="gap-1"><Plus className="w-4 h-4" /> Add</Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -242,6 +325,17 @@ function Manager() {
                 placeholder="Write a clear, helpful answer…"
                 rows={6}
               />
+            </div>
+            <div>
+              <Label>Category</Label>
+              <select
+                value={editing.category_id ?? ""}
+                onChange={e => setEditing({ ...editing, category_id: e.target.value || null })}
+                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="">Uncategorized</option>
+                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
             </div>
             <div className="flex items-center gap-2">
               <Switch
@@ -288,6 +382,7 @@ function Manager() {
               <SortableRow
                 key={f.id}
                 faq={f}
+                categoryName={catName(f.category_id)}
                 onEdit={setEditing}
                 onDelete={setDeleteTarget}
                 onToggle={toggle}

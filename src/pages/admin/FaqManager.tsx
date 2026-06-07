@@ -256,6 +256,15 @@ function Manager() {
               className="pl-9"
             />
           </div>
+          <select
+            value={categoryFilter}
+            onChange={e => setCategoryFilter(e.target.value)}
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            <option value="all">All categories</option>
+            <option value="none">Uncategorized</option>
+            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
           <Tabs value={tab} onValueChange={v => setTab(v as any)}>
             <TabsList>
               <TabsTrigger value="all">All ({rows.length})</TabsTrigger>
@@ -263,6 +272,33 @@ function Manager() {
               <TabsTrigger value="inactive">Inactive ({rows.filter(r => !r.enabled).length})</TabsTrigger>
             </TabsList>
           </Tabs>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="text-sm">FAQ Categories</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap gap-2">
+            {categories.length === 0 && <span className="text-sm text-muted-foreground">No categories yet.</span>}
+            {categories.map(c => (
+              <span key={c.id} className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-muted">
+                {c.name}
+                <button onClick={() => deleteCategory(c.id)} className="text-destructive hover:opacity-70" aria-label={`Delete ${c.name}`}>
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Input
+              value={newCatName}
+              onChange={e => setNewCatName(e.target.value)}
+              placeholder="New category name (e.g. Booking, Amenities)"
+              onKeyDown={e => e.key === "Enter" && addCategory()}
+              className="max-w-sm"
+            />
+            <Button onClick={addCategory} variant="secondary" className="gap-1"><Plus className="w-4 h-4" /> Add</Button>
+          </div>
         </CardContent>
       </Card>
 

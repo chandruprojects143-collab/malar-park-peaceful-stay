@@ -54,7 +54,35 @@ export function AdminSidebar() {
   const location = useLocation();
   const { user, logout, hasAccess } = useAdminAuth();
 
-  const visibleItems = menuItems.filter(i => hasAccess(i.module));
+  const visibleOps = operationsItems.filter(i => hasAccess(i.module));
+  const visibleOwner = ownerItems.filter(i => hasAccess(i.module));
+
+  const renderGroup = (label: string, items: MenuItem[]) => (
+    items.length > 0 && (
+      <SidebarGroup>
+        <SidebarGroupLabel>{!collapsed && label}</SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {items.map(item => (
+              <SidebarMenuItem key={item.url}>
+                <SidebarMenuButton asChild>
+                  <NavLink
+                    to={item.url}
+                    end={item.url === '/admin'}
+                    className="hover:bg-muted/50"
+                    activeClassName="bg-primary/10 text-primary font-medium"
+                  >
+                    <item.icon className="mr-2 h-4 w-4" />
+                    {!collapsed && <span>{item.title}</span>}
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    )
+  );
 
   return (
     <Sidebar collapsible="icon">
@@ -67,26 +95,10 @@ export function AdminSidebar() {
               </span>
             )}
           </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {visibleItems.map(item => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === '/admin'}
-                      className="hover:bg-muted/50"
-                      activeClassName="bg-primary/10 text-primary font-medium"
-                    >
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
         </SidebarGroup>
+
+        {renderGroup('Operations', visibleOps)}
+        {renderGroup('👑 Owner Control Center', visibleOwner)}
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
             <SidebarMenu>

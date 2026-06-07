@@ -131,10 +131,14 @@ function Manager() {
     return rows.filter(r => {
       if (tab === "active" && !r.enabled) return false;
       if (tab === "inactive" && r.enabled) return false;
+      if (categoryFilter !== "all") {
+        if (categoryFilter === "none" && r.category_id) return false;
+        if (categoryFilter !== "none" && r.category_id !== categoryFilter) return false;
+      }
       if (!q) return true;
       return (r.question + " " + (r.answer_html || "")).toLowerCase().includes(q);
     });
-  }, [rows, search, tab]);
+  }, [rows, search, tab, categoryFilter]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),

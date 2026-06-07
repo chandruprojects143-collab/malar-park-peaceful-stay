@@ -31,7 +31,10 @@ interface Faq {
   answer_html: string;
   sort: number;
   enabled: boolean;
+  category_id?: string | null;
 }
+
+interface FaqCategory { id: string; name: string; sort: number; }
 
 function SortableRow({ faq, onEdit, onDelete, onToggle }: {
   faq: Faq;

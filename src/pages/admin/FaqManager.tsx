@@ -36,8 +36,9 @@ interface Faq {
 
 interface FaqCategory { id: string; name: string; sort: number; }
 
-function SortableRow({ faq, onEdit, onDelete, onToggle }: {
+function SortableRow({ faq, categoryName, onEdit, onDelete, onToggle }: {
   faq: Faq;
+  categoryName: string;
   onEdit: (f: Faq) => void;
   onDelete: (f: Faq) => void;
   onToggle: (f: Faq) => void;

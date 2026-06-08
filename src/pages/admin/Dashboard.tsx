@@ -85,7 +85,6 @@ const Dashboard = () => {
     { title: 'Maintenance Alerts', value: overdueActivities.length.toString(), sub: 'overdue tasks', icon: Wrench, color: 'text-orange-600' },
   ];
 
-  const { user, hasAccess } = useAdminAuth();
   const visibleModules = moduleItems.filter(m => {
     if (m.ownerOnly) return user?.role === 'admin';
     return hasAccess(m.module);

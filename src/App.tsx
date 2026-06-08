@@ -82,6 +82,7 @@ const App = () => (
               <Route path="nav" element={<NavManager />} />
               <Route path="seo-pages" element={<SeoManager />} />
               <Route path="media" element={<MediaLibrary />} />
+              <Route path="owner" element={<OwnerControlCenter />} />
 
             </Route>
             <Route path="*" element={<NotFound />} />

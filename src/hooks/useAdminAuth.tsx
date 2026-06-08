@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { AdminUser, UserRole } from '@/types/admin';
+import { setAdminWritePassword, clearAdminWritePassword } from '@/lib/adminWrite';
 
 const PASSWORDS: Record<UserRole, string> = {
   admin: 'malar2024',

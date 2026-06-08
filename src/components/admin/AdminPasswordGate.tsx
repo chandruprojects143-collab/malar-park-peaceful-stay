@@ -5,20 +5,25 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Lock } from "lucide-react";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
 
 export function AdminPasswordGate({ children }: { children: React.ReactNode }) {
+  const { user } = useAdminAuth();
   const [pw, setPw] = useState(getAdminWritePassword() ?? "");
   const [unlocked, setUnlocked] = useState(!!getAdminWritePassword());
 
-  if (unlocked) return <>{children}</>;
+  // Owner login automatically unlocks the Owner Control Center.
+  if (user?.role === "admin" || unlocked) return <>{children}</>;
+
   return (
     <Card className="max-w-md mx-auto mt-12">
       <CardContent className="pt-6 space-y-4">
         <div className="flex items-center gap-2 text-primary">
-          <Lock className="w-5 h-5" /> <h2 className="font-semibold">Admin write unlock</h2>
+          <Lock className="w-5 h-5" /> <h2 className="font-semibold">Owner access required</h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          Enter the admin write password (set on the server) to enable creating, editing and deleting CMS content.
+          Sign in as the Owner from the staff login to manage CMS content. You can also enter the
+          admin write password manually below.
         </p>
         <div>
           <Label>Admin write password</Label>

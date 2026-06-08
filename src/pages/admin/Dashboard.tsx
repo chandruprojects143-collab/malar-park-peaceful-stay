@@ -25,7 +25,10 @@ const getActivityStatus = (lastCompleted: string, frequency: string) => {
   return 'ok';
 };
 
-const moduleItems = [
+type DashModule = { title: string; url: string; icon: any; module: string; color: string; bg: string; ownerOnly?: boolean };
+
+const moduleItems: DashModule[] = [
+  { title: '👑 Owner Control Center', url: '/admin/owner', icon: LayoutDashboard, module: 'owner-center', color: 'text-yellow-600', bg: 'bg-yellow-50', ownerOnly: true },
   { title: 'Reception', url: '/admin/reception', icon: ClipboardList, module: 'reception', color: 'text-blue-600', bg: 'bg-blue-50' },
   { title: 'Room Status', url: '/admin/rooms', icon: BedDouble, module: 'rooms', color: 'text-emerald-600', bg: 'bg-emerald-50' },
   { title: 'Room Prices', url: '/admin/room-prices', icon: CreditCard, module: 'room-prices', color: 'text-violet-600', bg: 'bg-violet-50' },
@@ -44,7 +47,7 @@ const moduleItems = [
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { hasAccess } = useAdminAuth();
+  const { user, hasAccess } = useAdminAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [rooms] = useLocalStorage<Room[]>('malar_rooms', []);
   const [bookings] = useLocalStorage<BookingEntry[]>('malar_bookings', []);
@@ -82,7 +85,10 @@ const Dashboard = () => {
     { title: 'Maintenance Alerts', value: overdueActivities.length.toString(), sub: 'overdue tasks', icon: Wrench, color: 'text-orange-600' },
   ];
 
-  const visibleModules = moduleItems.filter(m => hasAccess(m.module));
+  const visibleModules = moduleItems.filter(m => {
+    if (m.ownerOnly) return user?.role === 'admin';
+    return hasAccess(m.module);
+  });
   const filteredModules = visibleModules.filter(m => 
     m.title.toLowerCase().includes(searchQuery.toLowerCase())
   );

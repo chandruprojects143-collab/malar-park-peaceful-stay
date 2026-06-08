@@ -47,7 +47,7 @@ const moduleItems: DashModule[] = [
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { hasAccess } = useAdminAuth();
+  const { user, hasAccess } = useAdminAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [rooms] = useLocalStorage<Room[]>('malar_rooms', []);
   const [bookings] = useLocalStorage<BookingEntry[]>('malar_bookings', []);

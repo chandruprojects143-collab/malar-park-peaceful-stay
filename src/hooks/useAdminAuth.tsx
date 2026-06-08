@@ -49,6 +49,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       const adminUser: AdminUser = { role, name: ROLE_NAMES[role] };
       setUser(adminUser);
       sessionStorage.setItem('admin_user', JSON.stringify(adminUser));
+      // Owner login auto-unlocks the Owner Control Center (CMS write access)
+      if (role === 'admin') setAdminWritePassword(password);
       return true;
     }
     return false;
@@ -57,6 +59,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem('admin_user');
+    clearAdminWritePassword();
   };
 
   const hasAccess = (module: string) => {

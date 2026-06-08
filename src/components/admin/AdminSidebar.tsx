@@ -36,7 +36,7 @@ const ownerItems: MenuItem[] = [
   { title: 'FAQ Management', url: '/admin/faqs', icon: HelpCircle, module: 'content' },
   { title: 'Hero Slides', url: '/admin/hero', icon: Layers, module: 'content' },
   { title: 'Amenities CMS', url: '/admin/amenities', icon: Sparkles, module: 'content' },
-  { title: 'Reviews CMS', url: '/admin/cms-reviews', icon: MessageSquareQuote, module: 'content' },
+  { title: '⭐ Guest Reviews', url: '/admin/cms-reviews', icon: MessageSquareQuote, module: 'content' },
   { title: 'Attractions', url: '/admin/attractions', icon: MapPin, module: 'content' },
   { title: 'OTA Links', url: '/admin/ota-links', icon: Link2, module: 'content' },
   { title: 'Navigation', url: '/admin/nav', icon: Menu, module: 'content' },

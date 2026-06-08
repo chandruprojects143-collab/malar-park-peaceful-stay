@@ -12,7 +12,12 @@ const fallback = [
 const ReviewsSection = () => {
   const { t } = useT();
   const { data: db = [] } = useReviewsDb();
-  const enabled = db.filter((r: any) => r.enabled);
+  const enabled = db
+    .filter((r: any) => r.enabled)
+    .sort((a: any, b: any) => {
+      if (!!a.featured !== !!b.featured) return a.featured ? -1 : 1;
+      return (b.created_at ?? "").localeCompare(a.created_at ?? "");
+    });
   const reviews = enabled.length > 0 ? enabled : fallback;
   return (
     <section id="reviews" className="py-20 bg-background">

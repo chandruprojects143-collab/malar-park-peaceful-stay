@@ -1,80 +1,85 @@
-import { useState } from "react";
-import { Menu, X, Phone } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { useT } from "@/i18n/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
-import { buildTelHref, trackEvent } from "@/lib/analytics";
+import { trackEvent } from "@/lib/analytics";
 
 const Navbar = () => {
-  const [open, setOpen] = useState(false);
   const { t } = useT();
+  const [active, setActive] = useState<string>("home");
 
-  const navLinks = [
-    { label: t("nav.home"), href: "#home" },
-    { label: t("nav.about"), href: "#about" },
-    { label: t("nav.rooms"), href: "#rooms" },
-    { label: t("nav.amenities"), href: "#amenities" },
-    { label: t("nav.gallery"), href: "#gallery" },
-    { label: t("nav.reviews"), href: "#reviews" },
-    { label: t("nav.faq"), href: "#faq" },
-    { label: t("nav.contact"), href: "#contact" },
+  const rowOne = [
+    { id: "home", label: t("nav.home") },
+    { id: "about", label: t("nav.about") },
+    { id: "rooms", label: t("nav.rooms") },
+    { id: "amenities", label: t("nav.amenities") },
   ];
+  const rowTwo = [
+    { id: "gallery", label: t("nav.gallery") },
+    { id: "reviews", label: t("nav.reviews") },
+    { id: "faq", label: t("nav.faq") },
+    { id: "contact", label: t("nav.contact") },
+  ];
+  const all = [...rowOne, ...rowTwo];
 
-  const tel = buildTelHref({ source: "website", medium: "navbar", campaign: "call_now" });
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY + 200;
+      let current = "home";
+      for (const it of all) {
+        const el = document.getElementById(it.id);
+        if (el && el.offsetTop <= y) current = it.id;
+      }
+      setActive(current);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleClick = (id: string) => {
+    trackEvent("nav_section_click", { section: id });
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const renderRow = (items: { id: string; label: string }[]) => (
+    <div className="flex flex-wrap justify-center gap-2">
+      {items.map((it) => {
+        const isActive = active === it.id;
+        return (
+          <button
+            key={it.id}
+            type="button"
+            onClick={() => handleClick(it.id)}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium shadow-sm transition-all duration-200 border ${
+              isActive
+                ? "bg-[#D4A437] text-white border-[#D4A437] shadow-md"
+                : "bg-white text-[#0F6B52] border-[#0F6B52]/15 hover:bg-[#0F6B52]/5"
+            }`}
+          >
+            {it.label}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto flex items-center justify-between py-3 px-4">
-        <a href="#home" className="flex items-center gap-3">
-          <img
-            src="/malar_park_logo-removebg.png"
-            alt="Malar Park"
-            className="h-10 w-auto object-contain"
-          />
-          <span className="font-heading text-2xl font-bold text-primary">Malar Park</span>
-        </a>
-        <div className="hidden lg:flex items-center gap-6">
-          {navLinks.map((l) => (
-            <a key={l.href} href={l.href} className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-              {l.label}
-            </a>
-          ))}
-        </div>
-        <div className="hidden lg:flex items-center gap-3">
-          <LanguageToggle />
-          <a href={tel} onClick={() => trackEvent("nav_call_click", { medium: "navbar" })}>
-            <Button size="sm" variant="outline" className="gap-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-              <Phone className="w-4 h-4" /> {t("cta.call")}
-            </Button>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
+      <div className="container mx-auto px-3 py-2.5">
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <a href="#home" onClick={(e) => { e.preventDefault(); handleClick("home"); }} className="flex items-center gap-2 min-w-0">
+            <img src="/malar_park_logo-removebg.png" alt="Malar Park" className="h-9 w-auto object-contain shrink-0" />
+            <span className="font-heading text-lg sm:text-xl font-bold text-primary truncate">Malar Park</span>
           </a>
-          <a href="#booking" onClick={() => trackEvent("nav_book_click", { medium: "navbar" })}>
-            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">{t("cta.book")}</Button>
-          </a>
-        </div>
-        <div className="flex items-center gap-2 lg:hidden">
           <LanguageToggle />
-          <button aria-label="Menu" className="text-foreground" onClick={() => setOpen(!open)}>
-            {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          {renderRow(rowOne)}
+          {renderRow(rowTwo)}
         </div>
       </div>
-      {open && (
-        <div className="lg:hidden bg-card border-t border-border px-4 pb-4">
-          {navLinks.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/80 hover:text-primary transition-colors">
-              {l.label}
-            </a>
-          ))}
-          <div className="flex gap-2 mt-3">
-            <a href={tel} className="flex-1" onClick={() => trackEvent("nav_call_click", { medium: "navbar_mobile" })}>
-              <Button size="sm" variant="outline" className="w-full border-primary text-primary">{t("cta.call")}</Button>
-            </a>
-            <a href="#booking" className="flex-1" onClick={() => { setOpen(false); trackEvent("nav_book_click", { medium: "navbar_mobile" }); }}>
-              <Button size="sm" className="w-full bg-primary text-primary-foreground">{t("cta.book")}</Button>
-            </a>
-          </div>
-        </div>
-      )}
     </nav>
   );
 };

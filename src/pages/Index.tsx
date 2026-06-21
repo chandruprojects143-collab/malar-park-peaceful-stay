@@ -18,15 +18,15 @@ const Index = () => (
     <Navbar />
     <HeroSection />
     <AboutSection />
-    <RoomsSection />
     <AmenitiesSection />
-    <LocationSection />
-    <GoogleBusinessButtons />
     <ReviewsSection />
+    <GoogleBusinessButtons />
+    <RoomsSection />
     <GallerySection />
     <BookingSection />
     <FAQSection />
     <ContactSection />
+    <LocationSection />
     <Footer />
     <FloatingButtons />
   </>

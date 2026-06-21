@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'reception' | 'housekeeping';
+export type UserRole = 'admin';
 
 export interface AdminUser {
   role: UserRole;
@@ -11,14 +11,11 @@ export interface Room {
   id: string;
   number: string;
   type: string;
+  description?: string;
+  capacity: number;
+  amenities: string[];
   status: RoomStatus;
-  guestName?: string;
-  checkInDate?: string;
-  checkoutDate?: string;
   rate: number;
-  advance?: number;
-  balance?: number;
-  paymentMethod?: 'Cash' | 'UPI' | 'Card';
 }
 
 export type ExpenseCategory =

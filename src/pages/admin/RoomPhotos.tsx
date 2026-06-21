@@ -6,11 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { ImagePlus, Trash2, Plus, X, Sparkles } from 'lucide-react';
+import { ImagePlus, Trash2, Plus, X } from 'lucide-react';
 import { RoomCard, DisplayRoom } from '@/components/RoomsSection';
-import roomDeluxe from '@/assets/room-deluxe.jpg';
-import roomFamily from '@/assets/room-family.jpg';
-import roomSuite from '@/assets/room-suite.jpg';
 
 export interface RoomPhoto {
   id: string;
@@ -94,32 +91,13 @@ const RoomPhotos = () => {
     setRooms(rooms.map(r => r.id === id ? { ...r, price: newPrice } : r));
   };
 
-  const seedSampleRoom = () => {
-    setRooms([
-      ...rooms,
-      {
-        id: `seed-${Date.now()}`,
-        name: 'Sample Deluxe Room',
-        description: 'Auto-seeded test room with multiple photos to verify the carousel.',
-        images: [roomDeluxe, roomFamily, roomSuite],
-        price: 1200,
-      },
-    ]);
-    toast.success('Sample room added with 3 photos — check the homepage carousel!');
-  };
-
   const previewRooms: DisplayRoom[] = rooms.length > 0
     ? rooms.map(r => ({ name: r.name, desc: r.description, images: r.images, price: r.price && r.price > 0 ? r.price : 1200 }))
     : [];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h1 className="text-2xl font-heading font-bold">📸 Room Photos</h1>
-        <Button variant="outline" size="sm" onClick={seedSampleRoom} className="gap-2">
-          <Sparkles className="w-4 h-4" /> Seed Sample Room
-        </Button>
-      </div>
+      <h1 className="text-2xl font-heading font-bold">📸 Room Photos</h1>
       <p className="text-sm text-muted-foreground">
         Add rooms with single or multiple photos & nightly price. These appear on the homepage and in Google Search results. Max 2MB per image.
       </p>
@@ -175,7 +153,7 @@ const RoomPhotos = () => {
           <div>
             <h2 className="text-lg font-semibold mb-3">Current Rooms ({rooms.length})</h2>
             {rooms.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No custom rooms. Default rooms shown on homepage. Click "Seed Sample Room" to test.</p>
+              <p className="text-sm text-muted-foreground">No rooms added yet. Use the form above to add room photos.</p>
             ) : (
               <div className="space-y-4">
                 {rooms.map(room => (

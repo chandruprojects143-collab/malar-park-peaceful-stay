@@ -1,35 +1,17 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { AdminUser, UserRole } from '@/types/admin';
-
-const PASSWORDS: Record<UserRole, string> = {
-  admin: 'malar2024',
-  reception: 'reception2024',
-  housekeeping: 'housekeeping2024',
-};
-
-const ROLE_NAMES: Record<UserRole, string> = {
-  admin: 'Admin (Owner)',
-  reception: 'Reception',
-  housekeeping: 'Housekeeping',
-};
+import { supabase } from '@/integrations/supabase/client';
 
 interface AuthContextType {
   user: AdminUser | null;
-  login: (role: UserRole, password: string) => boolean;
+  login: (password: string) => Promise<boolean>;
   logout: () => void;
   hasAccess: (module: string) => boolean;
 }
 
-const ACCESS_MAP: Record<UserRole, string[]> = {
-  admin: [
-    'dashboard', 'reception', 'rooms', 'room-prices', 'collection', 'expenses',
-    'staff', 'laundry', 'maintenance', 'staff-payments', 'bills', 'utilities', 'reports',
-    'room-photos', 'gallery-photos', 'availability', 'content'
-  ],
-  reception: ['dashboard', 'reception', 'rooms', 'collection', 'laundry'],
-  housekeeping: ['rooms', 'maintenance'],
-};
-
+const ADMIN_MODULES = [
+  'dashboard', 'rooms', 'reviews', 'room-photos', 'gallery-photos',
+];
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -43,14 +25,18 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  const login = (role: UserRole, password: string) => {
-    if (PASSWORDS[role] === password) {
-      const adminUser: AdminUser = { role, name: ROLE_NAMES[role] };
-      setUser(adminUser);
-      sessionStorage.setItem('admin_user', JSON.stringify(adminUser));
-      return true;
-    }
-    return false;
+  const login = async (password: string): Promise<boolean> => {
+    const { data, error } = await supabase.rpc('verify_admin_login', {
+      p_username: 'admin' as UserRole,
+      p_password: password,
+    });
+
+    if (error || !data || data.length === 0) return false;
+
+    const adminUser: AdminUser = { role: 'admin', name: 'Admin (Owner)' };
+    setUser(adminUser);
+    sessionStorage.setItem('admin_user', JSON.stringify(adminUser));
+    return true;
   };
 
   const logout = () => {
@@ -60,7 +46,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const hasAccess = (module: string) => {
     if (!user) return false;
-    return ACCESS_MAP[user.role]?.includes(module) ?? false;
+    return ADMIN_MODULES.includes(module);
   };
 
   return (

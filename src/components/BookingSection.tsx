@@ -104,13 +104,13 @@ ${message ? `Message: ${message}` : ""}`;
     window.open(wa, "_blank");
 
     // Auto-download PDF confirmation
-    try {
-      downloadBookingPdf(data);
-      trackEvent("booking_pdf_auto_download", { total });
-      toast.success("Booking enquiry PDF downloaded");
-    } catch (e) {
-      console.error("PDF generation failed", e);
-    }
+    // try {
+    //   downloadBookingPdf(data);
+    //   trackEvent("booking_pdf_auto_download", { total });
+    //   toast.success("Booking enquiry PDF downloaded");
+    // } catch (e) {
+    //   console.error("PDF generation failed", e);
+    // }
   };
 
   const handlePdfClick = () => {

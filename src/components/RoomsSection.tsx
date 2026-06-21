@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Wifi, Snowflake, Tv, ShowerHead, Car, BedDouble, ChevronLeft, ChevronRight, ImageOff, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { supabase } from "@/integrations/supabase/client";
 import { slugify, buildWhatsAppHref, trackEvent } from "@/lib/analytics";
 import { useT } from "@/i18n/LanguageContext";
 import { setSocialMeta } from "@/lib/socialMeta";
-import roomDeluxe from "@/assets/room-deluxe.jpg";
-import roomFamily from "@/assets/room-family.jpg";
-import roomSuite from "@/assets/room-suite.jpg";
 
 export interface RoomPhoto {
   id: string;
@@ -33,26 +30,6 @@ const amenityIcons = [
   { icon: BedDouble, key: "amenity.beds" },
   { icon: Car, key: "amenity.parking" },
 ];
-
-export const defaultRooms: DisplayRoom[] = [
-  { name: "Deluxe Room", desc: "Cozy and clean room perfect for solo travelers and couples.", images: [roomDeluxe], price: 1200 },
-  { name: "Family Room", desc: "Spacious room ideal for families with extra beds and amenities.", images: [roomFamily], price: 1800 },
-  { name: "Suite Room", desc: "Premium suite with sitting area for a luxurious yet affordable stay.", images: [roomSuite], price: 2500 },
-];
-
-// Map default English room names → translation keys (only applied when defaultRooms used)
-const roomNameKey = (name: string): string | null => {
-  if (name === "Deluxe Room") return "rooms.deluxe";
-  if (name === "Family Room") return "rooms.family";
-  if (name === "Suite Room") return "rooms.suite";
-  return null;
-};
-const roomDescKey = (name: string): string | null => {
-  if (name === "Deluxe Room") return "rooms.deluxe.desc";
-  if (name === "Family Room") return "rooms.family.desc";
-  if (name === "Suite Room") return "rooms.suite.desc";
-  return null;
-};
 
 const FallbackImage = ({ name }: { name: string }) => (
   <div className="w-full h-56 flex flex-col items-center justify-center bg-muted text-muted-foreground gap-2">
@@ -130,85 +107,91 @@ export const RoomImageCarousel = ({ images, name }: { images: string[]; name: st
 
 export const RoomCard = ({ room }: { room: DisplayRoom }) => {
   const { t } = useT();
-  const nameKey = roomNameKey(room.name);
-  const descKey = roomDescKey(room.name);
-  const displayName = nameKey ? t(nameKey) : room.name;
-  const displayDesc = descKey ? t(descKey) : room.desc;
   const wa = buildWhatsAppHref(
     `Hi, I want to enquire about the ${room.name} (₹${room.price}/night)`,
     { source: "website", medium: "room_card", campaign: "whatsapp", content: slugify(room.name) }
   );
   return (
-  <article
-    itemScope
-    itemType="https://schema.org/Product"
-    className="bg-card rounded-xl overflow-hidden shadow-elegant border border-border group"
-  >
-    <meta itemProp="name" content={room.name} />
-    <meta itemProp="description" content={room.desc} />
-    <div className="overflow-hidden">
-      <RoomImageCarousel images={room.images} name={room.name} />
-    </div>
-    <div className="p-6">
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="font-heading text-xl font-bold text-foreground" itemProp="name">{displayName}</h3>
-        <div
-          className="text-right"
-          itemProp="offers"
-          itemScope
-          itemType="https://schema.org/Offer"
-        >
-          <p className="text-lg font-bold text-primary leading-tight">
-            <span itemProp="priceCurrency" content="INR">₹</span>
-            <span itemProp="price" content={String(room.price)}>{room.price.toLocaleString()}</span>
-          </p>
-          <p className="text-[11px] text-muted-foreground">{t("rooms.perNight")}</p>
-          <link itemProp="availability" href="https://schema.org/InStock" />
+    <article
+      itemScope
+      itemType="https://schema.org/Product"
+      className="bg-card rounded-xl overflow-hidden shadow-elegant border border-border group"
+    >
+      <meta itemProp="name" content={room.name} />
+      <meta itemProp="description" content={room.desc} />
+      <div className="overflow-hidden">
+        <RoomImageCarousel images={room.images} name={room.name} />
+      </div>
+      <div className="p-6">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 className="font-heading text-xl font-bold text-foreground" itemProp="name">{room.name}</h3>
+          <div
+            className="text-right"
+            itemProp="offers"
+            itemScope
+            itemType="https://schema.org/Offer"
+          >
+            <p className="text-lg font-bold text-primary leading-tight">
+              <span itemProp="priceCurrency" content="INR">₹</span>
+              <span itemProp="price" content={String(room.price)}>{room.price.toLocaleString()}</span>
+            </p>
+            <p className="text-[11px] text-muted-foreground">{t("rooms.perNight")}</p>
+            <link itemProp="availability" href="https://schema.org/InStock" />
+          </div>
+        </div>
+        <p className="text-muted-foreground text-sm mb-4">{room.desc}</p>
+        <div className="grid grid-cols-3 gap-2 mb-5">
+          {amenityIcons.map((a) => (
+            <div key={a.key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <a.icon className="w-3.5 h-3.5 text-primary" />
+              {t(a.key)}
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Link to={`/rooms/${slugify(room.name)}`} className="flex-1 min-w-0" onClick={() => trackEvent("room_view_details", { room: room.name })}>
+            <Button variant="outline" className="w-full" size="sm">{t("cta.viewDetails")}</Button>
+          </Link>
+          <a href="#booking" className="flex-1 min-w-0" onClick={() => trackEvent("room_book_click", { room: room.name })}>
+            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" size="sm">{t("cta.book")}</Button>
+          </a>
+          <a href={wa} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-0"
+            onClick={() => trackEvent("room_whatsapp_click", { room: room.name })}>
+            <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground" size="sm">
+              <MessageCircle className="w-3.5 h-3.5 mr-1" />{t("cta.whatsapp")}
+            </Button>
+          </a>
         </div>
       </div>
-      <p className="text-muted-foreground text-sm mb-4">{displayDesc}</p>
-      <div className="grid grid-cols-3 gap-2 mb-5">
-        {amenityIcons.map((a) => (
-          <div key={a.key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <a.icon className="w-3.5 h-3.5 text-primary" />
-            {t(a.key)}
-          </div>
-        ))}
-      </div>
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Link to={`/rooms/${slugify(room.name)}`} className="flex-1 min-w-0" onClick={() => trackEvent("room_view_details", { room: room.name })}>
-          <Button variant="outline" className="w-full" size="sm">{t("cta.viewDetails")}</Button>
-        </Link>
-        <a href="#booking" className="flex-1 min-w-0" onClick={() => trackEvent("room_book_click", { room: room.name })}>
-          <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" size="sm">{t("cta.book")}</Button>
-        </a>
-        <a href={wa} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-0"
-          onClick={() => trackEvent("room_whatsapp_click", { room: room.name })}>
-          <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground" size="sm">
-            <MessageCircle className="w-3.5 h-3.5 mr-1" />{t("cta.whatsapp")}
-          </Button>
-        </a>
-      </div>
-    </div>
-  </article>
+    </article>
   );
 };
 
 const RoomsSection = () => {
-  const [customPhotos] = useLocalStorage<RoomPhoto[]>('malar_room_photos', []);
   const { t } = useT();
-  const rooms: DisplayRoom[] = customPhotos.length > 0
-    ? customPhotos.map(p => ({
-        name: p.name,
-        desc: p.description,
-        images: p.images,
-        price: p.price && p.price > 0 ? p.price : 1200,
-      }))
-    : defaultRooms;
+  const [rooms, setRooms] = useState<DisplayRoom[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const minPrice = Math.min(...rooms.map(r => r.price));
+  useEffect(() => {
+    supabase
+      .from('hotel_rooms')
+      .select('number, type, description, rate')
+      .order('number')
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setRooms(data.map(r => ({
+            name: `${r.type} Room #${r.number}`,
+            desc: r.description ?? '',
+            images: [],
+            price: r.rate,
+          })));
+        }
+        setLoading(false);
+      });
+  }, []);
 
-  // Dynamic OG/Twitter images sourced from selected room photos
+  const minPrice = rooms.length > 0 ? Math.min(...rooms.map(r => r.price)) : 0;
+
   useEffect(() => {
     const imgs = rooms.flatMap(r => r.images).filter(Boolean).slice(0, 4);
     if (imgs.length === 0) return;
@@ -219,6 +202,8 @@ const RoomsSection = () => {
     return cleanup;
   }, [rooms]);
 
+  if (loading) return null;
+
   return (
     <section id="rooms" className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -227,15 +212,21 @@ const RoomsSection = () => {
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">
             {t("rooms.title")}
           </h2>
-          <p className="mt-3 text-muted-foreground">
-            {t("rooms.startsFrom")} <span className="font-bold text-primary">₹{minPrice.toLocaleString()}/{t("rooms.perNight")}</span>
-          </p>
+          {minPrice > 0 && (
+            <p className="mt-3 text-muted-foreground">
+              {t("rooms.startsFrom")} <span className="font-bold text-primary">₹{minPrice.toLocaleString()}/{t("rooms.perNight")}</span>
+            </p>
+          )}
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          {rooms.map((room) => (
-            <RoomCard key={room.name} room={room} />
-          ))}
-        </div>
+        {rooms.length > 0 ? (
+          <div className="grid md:grid-cols-3 gap-8">
+            {rooms.map((room) => (
+              <RoomCard key={room.name} room={room} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-muted-foreground py-12">Rooms details coming soon.</p>
+        )}
       </div>
     </section>
   );

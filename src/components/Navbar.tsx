@@ -12,10 +12,10 @@ const Navbar = () => {
   const navLinks = [
     { label: t("nav.home"), href: "#home" },
     { label: t("nav.about"), href: "#about" },
-    { label: t("nav.rooms"), href: "#rooms" },
     { label: t("nav.amenities"), href: "#amenities" },
-    { label: t("nav.gallery"), href: "#gallery" },
     { label: t("nav.reviews"), href: "#reviews" },
+    { label: t("nav.rooms"), href: "#rooms" },
+    { label: t("nav.gallery"), href: "#gallery" },
     { label: t("nav.faq"), href: "#faq" },
     { label: t("nav.contact"), href: "#contact" },
   ];
@@ -59,13 +59,22 @@ const Navbar = () => {
         </div>
       </div>
       {open && (
-        <div className="lg:hidden bg-card border-t border-border px-4 pb-4">
-          {navLinks.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/80 hover:text-primary transition-colors">
-              {l.label}
-            </a>
-          ))}
-          <div className="flex gap-2 mt-3">
+        <div className="lg:hidden bg-card border-t border-border pt-3 pb-4">
+          <div className="overflow-x-auto scrollbar-hide px-4">
+            <div className="flex gap-2 w-max">
+              {navLinks.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium bg-muted text-foreground/80 hover:bg-primary hover:text-primary-foreground transition-colors"
+                >
+                  {l.label}
+                </a>
+              ))}
+            </div>
+          </div>
+          <div className="flex gap-2 mt-3 px-4">
             <a href={tel} className="flex-1" onClick={() => trackEvent("nav_call_click", { medium: "navbar_mobile" })}>
               <Button size="sm" variant="outline" className="w-full border-primary text-primary">{t("cta.call")}</Button>
             </a>

@@ -73,8 +73,8 @@ export const generateBookingPdf = (d: BookingPdfData): jsPDF => {
   doc.setFontSize(10);
   doc.text("Room", M, y);
   doc.text("Qty", W - M - 180, y);
-  doc.text("Rate (₹/night)", W - M - 130, y);
-  doc.text("Subtotal (₹)", W - M, y, { align: "right" });
+  doc.text("Rate (Rs./night)", W - M - 130, y);
+  doc.text("Subtotal (Rs.)", W - M, y, { align: "center" });
   y += 6;
   doc.line(M, y, W - M, y);
   y += 14;

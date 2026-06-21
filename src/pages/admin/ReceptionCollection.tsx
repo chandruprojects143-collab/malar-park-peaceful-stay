@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useState, useEffect, useCallback } from 'react';
 import { BookingEntry, Room } from '@/types/admin';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,47 +14,83 @@ import { AlertCircle } from 'lucide-react';
 const today = new Date().toISOString().split('T')[0];
 const currentMonth = today.substring(0, 7);
 
-const defaultRooms: Room[] = Array.from({ length: 12 }, (_, i) => ({
-  id: `room-${i + 1}`,
-  number: `${100 + i + 1}`,
-  type: i < 4 ? 'Deluxe' : i < 8 ? 'Family' : 'Suite',
-  status: 'available' as const,
-  rate: i < 4 ? 1200 : i < 8 ? 1800 : 2500,
-}));
+const bookingFromDb = (row: any): BookingEntry => ({
+  id:            row.id,
+  roomNumber:    row.room_number,
+  guestName:     row.guest_name,
+  checkInDate:   row.check_in_date,
+  checkoutDate:  row.checkout_date ?? '',
+  roomPrice:     row.room_price,
+  advance:       row.advance,
+  balance:       row.balance,
+  paymentMethod: row.payment_method,
+  date:          row.date,
+});
+
+const roomFromDb = (row: any): Room => ({
+  id:     row.id,
+  number: row.number,
+  type:   row.type,
+  status: row.status,
+  rate:   row.rate,
+});
 
 const ReceptionCollection = () => {
-  const [bookings, setBookings] = useLocalStorage<BookingEntry[]>('malar_bookings', []);
-  const [rooms] = useLocalStorage<Room[]>('malar_rooms', defaultRooms);
+  const [bookings, setBookings] = useState<BookingEntry[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [form, setForm] = useState({
     roomNumber: '', guestName: '', checkInDate: today, checkoutDate: '',
     roomPrice: 0, advance: 0, paymentMethod: 'Cash' as 'Cash' | 'UPI' | 'Card',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const fetchData = useCallback(async () => {
+    const [bookingsRes, roomsRes] = await Promise.all([
+      supabase.from('bookings').select('*').order('created_at', { ascending: false }),
+      supabase.from('hotel_rooms').select('id, number, type, status, rate').order('number'),
+    ]);
+    if (bookingsRes.error) toast.error('Failed to load bookings');
+    else setBookings((bookingsRes.data ?? []).map(bookingFromDb));
+    if (roomsRes.error) toast.error('Failed to load rooms');
+    else setRooms((roomsRes.data ?? []).map(roomFromDb));
+  }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.roomNumber || !form.guestName || !form.roomPrice) {
       toast.error('Fill all required fields');
       return;
     }
     const balance = form.roomPrice - form.advance;
-    const entry: BookingEntry = {
-      id: Date.now().toString(),
-      ...form,
-      balance,
-      date: today,
-    };
-    setBookings(prev => [...prev, entry]);
+    const { data, error } = await supabase
+      .from('bookings')
+      .insert({
+        room_number:    form.roomNumber,
+        guest_name:     form.guestName,
+        check_in_date:  form.checkInDate,
+        checkout_date:  form.checkoutDate || null,
+        room_price:     form.roomPrice,
+        advance:        form.advance,
+        balance,
+        payment_method: form.paymentMethod,
+        date:           today,
+      })
+      .select()
+      .single();
+
+    if (error) { toast.error('Failed to add booking'); return; }
+    setBookings(prev => [bookingFromDb(data), ...prev]);
     setForm({ roomNumber: '', guestName: '', checkInDate: today, checkoutDate: '', roomPrice: 0, advance: 0, paymentMethod: 'Cash' });
     toast.success('Booking entry added');
   };
 
-  const todayBookings = bookings.filter(b => b.date === today);
-  const monthBookings = bookings.filter(b => b.date.startsWith(currentMonth));
+  const todayBookings   = bookings.filter(b => b.date === today);
+  const monthBookings   = bookings.filter(b => b.date.startsWith(currentMonth));
   const todayCollection = todayBookings.reduce((s, b) => s + b.advance, 0);
-  const monthRevenue = monthBookings.reduce((s, b) => s + b.roomPrice, 0);
+  const monthRevenue    = monthBookings.reduce((s, b) => s + b.roomPrice, 0);
   const pendingPayments = bookings.filter(b => b.balance > 0);
 
-  // Room-wise earnings
   const roomEarnings = bookings.reduce<Record<string, number>>((acc, b) => {
     acc[b.roomNumber] = (acc[b.roomNumber] || 0) + b.advance;
     return acc;
@@ -79,9 +115,7 @@ const ReceptionCollection = () => {
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Pending Payments</CardTitle></CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{pendingPayments.length}</div>
-          </CardContent>
+          <CardContent><div className="text-2xl font-bold text-red-600">{pendingPayments.length}</div></CardContent>
         </Card>
       </div>
 
@@ -175,11 +209,9 @@ const ReceptionCollection = () => {
                     <TableCell>₹{b.roomPrice.toLocaleString()}</TableCell>
                     <TableCell className="text-green-600">₹{b.advance.toLocaleString()}</TableCell>
                     <TableCell>
-                      {b.balance > 0 ? (
-                        <Badge variant="destructive">₹{b.balance.toLocaleString()}</Badge>
-                      ) : (
-                        <Badge className="bg-green-500">Paid</Badge>
-                      )}
+                      {b.balance > 0
+                        ? <Badge variant="destructive">₹{b.balance.toLocaleString()}</Badge>
+                        : <Badge className="bg-green-500">Paid</Badge>}
                     </TableCell>
                   </TableRow>
                 ))}

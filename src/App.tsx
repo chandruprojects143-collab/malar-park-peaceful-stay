@@ -10,10 +10,7 @@ import NotFound from "./pages/NotFound.tsx";
 import AdminLogin from "./pages/admin/AdminLogin.tsx";
 import AdminLayout from "./pages/admin/AdminLayout.tsx";
 import Dashboard from "./pages/admin/Dashboard.tsx";
-import RoomStatus from "./pages/admin/RoomStatus.tsx";
 import RoomPriceManager from "./pages/admin/RoomPriceManager.tsx";
-import ReceptionCollection from "./pages/admin/ReceptionCollection.tsx";
-import DailyCollection from "./pages/admin/DailyCollection.tsx";
 import ExpenseManager from "./pages/admin/ExpenseManager.tsx";
 import StaffManagement from "./pages/admin/StaffManagement.tsx";
 import StaffPayments from "./pages/admin/StaffPayments.tsx";
@@ -30,6 +27,7 @@ import SeoPreview from "./pages/admin/SeoPreview.tsx";
 import HeroManager from "./pages/admin/HeroManager.tsx";
 import AmenitiesManager from "./pages/admin/AmenitiesManager.tsx";
 import ReviewsManager from "./pages/admin/ReviewsManager.tsx";
+
 import FaqManager from "./pages/admin/FaqManager.tsx";
 import AttractionsManager from "./pages/admin/AttractionsManager.tsx";
 import OtaLinksManager from "./pages/admin/OtaLinksManager.tsx";
@@ -55,10 +53,9 @@ const App = () => (
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
-              <Route path="reception" element={<ReceptionCollection />} />
-              <Route path="rooms" element={<RoomStatus />} />
-              <Route path="room-prices" element={<RoomPriceManager />} />
-              <Route path="collection" element={<DailyCollection />} />
+              <Route path="rooms" element={<RoomPriceManager />} />
+              <Route path="reviews" element={<ReviewsManager />} />
+
               <Route path="expenses" element={<ExpenseManager />} />
               <Route path="staff" element={<StaffManagement />} />
               <Route path="staff-payments" element={<StaffPayments />} />

@@ -44,9 +44,8 @@ const PHONE = '+918300003829';
 /** tel: links can't carry UTMs natively – we still track click event */
 export const buildTelHref = (_utm: Utm) => `tel:${PHONE}`;
 
-export const buildWhatsAppHref = (text: string, utm: Utm) => {
-  const fullText = `${text}\n\n[${utm.medium}/${utm.campaign || 'site'}]`;
-  return `https://wa.me/${PHONE.replace('+', '')}?text=${encodeURIComponent(fullText)}`;
+export const buildWhatsAppHref = (text: string, _utm: Utm) => {
+  return `https://wa.me/${PHONE.replace('+', '')}?text=${encodeURIComponent(text)}`;
 };
 
 export const appendUtm = (url: string, utm: Utm) => {

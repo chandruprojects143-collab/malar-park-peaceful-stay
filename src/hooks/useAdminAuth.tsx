@@ -42,6 +42,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem('admin_user');
+    clearAdminWritePassword();
   };
 
   const hasAccess = (module: string) => {

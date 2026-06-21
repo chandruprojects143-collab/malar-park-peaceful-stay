@@ -34,6 +34,7 @@ import OtaLinksManager from "./pages/admin/OtaLinksManager.tsx";
 import NavManager from "./pages/admin/NavManager.tsx";
 import SeoManager from "./pages/admin/SeoManager.tsx";
 import MediaLibrary from "./pages/admin/MediaLibrary.tsx";
+import OwnerControlCenter from "./pages/admin/OwnerControlCenter.tsx";
 import RoomDetail from "./pages/RoomDetail.tsx";
 
 
@@ -78,6 +79,7 @@ const App = () => (
               <Route path="nav" element={<NavManager />} />
               <Route path="seo-pages" element={<SeoManager />} />
               <Route path="media" element={<MediaLibrary />} />
+              <Route path="owner" element={<OwnerControlCenter />} />
 
             </Route>
             <Route path="*" element={<NotFound />} />

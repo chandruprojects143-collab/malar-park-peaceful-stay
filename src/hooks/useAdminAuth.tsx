@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { AdminUser, UserRole } from '@/types/admin';
 import { supabase } from '@/integrations/supabase/client';
+import { clearAdminWritePassword } from '@/lib/adminWrite';
 
 interface AuthContextType {
   user: AdminUser | null;
@@ -10,7 +11,7 @@ interface AuthContextType {
 }
 
 const ADMIN_MODULES = [
-  'dashboard', 'rooms', 'reviews', 'room-photos', 'gallery-photos',
+  'dashboard', 'rooms', 'reviews', 'gallery-photos',
 ];
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -26,12 +27,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   });
 
   const login = async (password: string): Promise<boolean> => {
-    const { data, error } = await supabase.rpc('verify_admin_login', {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase.rpc as any)('verify_admin_login', {
       p_username: 'admin' as UserRole,
       p_password: password,
     });
 
-    if (error || !data || data.length === 0) return false;
+    if (error || !data || (data as any[]).length === 0) return false;
 
     const adminUser: AdminUser = { role: 'admin', name: 'Admin (Owner)' };
     setUser(adminUser);

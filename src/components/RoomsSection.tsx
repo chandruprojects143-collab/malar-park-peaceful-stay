@@ -173,17 +173,27 @@ const RoomsSection = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
+    type RoomRow = {
+      number: number;
+      type: string;
+      description?: string | null;
+      rate?: number | null;
+      images?: string[] | null;
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
       .from('hotel_rooms')
-      .select('number, type, description, rate')
+      .select('number, type, description, rate, images')
       .order('number')
-      .then(({ data }) => {
+      .then((res: any) => {
+        const data = res.data as RoomRow[] | null;
         if (data && data.length > 0) {
           setRooms(data.map(r => ({
-            name: `${r.type} Room #${r.number}`,
+            name: `${r.type} Room`,
             desc: r.description ?? '',
-            images: [],
-            price: r.rate,
+            images: r.images ?? [],
+            price: r.rate ?? 0,
           })));
         }
         setLoading(false);

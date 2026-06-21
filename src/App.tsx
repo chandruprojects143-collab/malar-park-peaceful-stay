@@ -19,7 +19,6 @@ import MaintenanceActivities from "./pages/admin/MaintenanceActivities.tsx";
 import BillManagement from "./pages/admin/BillManagement.tsx";
 import UtilityTracker from "./pages/admin/UtilityTracker.tsx";
 import Reports from "./pages/admin/Reports.tsx";
-import RoomPhotos from "./pages/admin/RoomPhotos.tsx";
 import GalleryPhotos from "./pages/admin/GalleryPhotos.tsx";
 import AvailabilityManager from "./pages/admin/AvailabilityManager.tsx";
 import AvailabilitySummary from "./pages/admin/AvailabilitySummary.tsx";
@@ -65,7 +64,6 @@ const App = () => (
               <Route path="bills" element={<BillManagement />} />
               <Route path="utilities" element={<UtilityTracker />} />
               <Route path="reports" element={<Reports />} />
-              <Route path="room-photos" element={<RoomPhotos />} />
               <Route path="gallery-photos" element={<GalleryPhotos />} />
               <Route path="availability" element={<AvailabilityManager />} />
               <Route path="availability-summary" element={<AvailabilitySummary />} />

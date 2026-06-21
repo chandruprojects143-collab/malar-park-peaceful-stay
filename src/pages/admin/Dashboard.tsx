@@ -8,7 +8,6 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 const moduleItems = [
   { title: 'Room Management', url: '/admin/rooms', icon: BedDouble, module: 'rooms', color: 'text-emerald-600', bg: 'bg-emerald-50' },
   { title: 'Guest Reviews', url: '/admin/reviews', icon: Star, module: 'reviews', color: 'text-yellow-600', bg: 'bg-yellow-50' },
-  { title: 'Room Photos', url: '/admin/room-photos', icon: Camera, module: 'room-photos', color: 'text-cyan-600', bg: 'bg-cyan-50' },
   { title: 'Gallery Photos', url: '/admin/gallery-photos', icon: ImageIcon, module: 'gallery-photos', color: 'text-rose-600', bg: 'bg-rose-50' },
 ];
 

@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, BedDouble, LogOut, ArrowLeft, Camera, ImageIcon, Star,
+  LayoutDashboard, BedDouble, LogOut, ArrowLeft, ImageIcon, Star,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
@@ -14,7 +14,6 @@ const menuItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, module: 'dashboard' },
   { title: 'Room Management', url: '/admin/rooms', icon: BedDouble, module: 'rooms' },
   { title: 'Guest Reviews', url: '/admin/reviews', icon: Star, module: 'reviews' },
-  { title: 'Room Photos', url: '/admin/room-photos', icon: Camera, module: 'room-photos' },
   { title: 'Gallery Photos', url: '/admin/gallery-photos', icon: ImageIcon, module: 'gallery-photos' },
 ];
 

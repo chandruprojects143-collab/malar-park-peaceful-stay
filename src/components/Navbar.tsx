@@ -12,10 +12,10 @@ const Navbar = () => {
   const navLinks = [
     { label: t("nav.home"), href: "#home" },
     { label: t("nav.about"), href: "#about" },
-    { label: t("nav.rooms"), href: "#rooms" },
     { label: t("nav.amenities"), href: "#amenities" },
-    { label: t("nav.gallery"), href: "#gallery" },
     { label: t("nav.reviews"), href: "#reviews" },
+    { label: t("nav.rooms"), href: "#rooms" },
+    { label: t("nav.gallery"), href: "#gallery" },
     { label: t("nav.faq"), href: "#faq" },
     { label: t("nav.contact"), href: "#contact" },
   ];
@@ -53,13 +53,13 @@ const Navbar = () => {
         </div>
         <div className="flex items-center gap-2 lg:hidden">
           <LanguageToggle />
-          <button aria-label="Menu" className="text-foreground" onClick={() => setOpen(!open)}>
+          {/* <button aria-label="Menu" className="text-foreground" onClick={() => setOpen(!open)}>
             {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          </button> */}
         </div>
       </div>
-      {open && (
-        <div className="lg:hidden bg-card border-t border-border pt-3 pb-4">
+      {/* {open && ( */}
+        <div className="lg:hidden bg-card border-t border-border pt-3 pb-4 flex justify-center">
           <div className="overflow-x-auto scrollbar-hide px-4">
             <div className="flex gap-2 w-max">
               {navLinks.map((l) => (
@@ -74,16 +74,16 @@ const Navbar = () => {
               ))}
             </div>
           </div>
-          <div className="flex gap-2 mt-3 px-4">
+          {/* <div className="flex gap-2 mt-3 px-4">
             <a href={tel} className="flex-1" onClick={() => trackEvent("nav_call_click", { medium: "navbar_mobile" })}>
               <Button size="sm" variant="outline" className="w-full border-primary text-primary">{t("cta.call")}</Button>
             </a>
             <a href="#booking" className="flex-1" onClick={() => { setOpen(false); trackEvent("nav_book_click", { medium: "navbar_mobile" }); }}>
               <Button size="sm" className="w-full bg-primary text-primary-foreground">{t("cta.book")}</Button>
             </a>
-          </div>
+          </div> */}
         </div>
-      )}
+      {/* )} */}
     </nav>
   );
 };

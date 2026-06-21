@@ -167,7 +167,7 @@ ${message ? `Message: ${message}` : ""}`;
           <p className="text-secondary font-medium tracking-widest uppercase text-sm mb-2">{t("booking.kicker")}</p>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">{t("booking.title")}</h2>
         </div>
-        <div className="max-w-2xl mx-auto bg-card rounded-xl p-6 md:p-8 border border-border shadow-elegant pb-28 md:pb-8">
+        <div className="max-w-2xl mx-auto bg-card rounded-xl p-6 md:p-8 border border-border shadow-elegant pb-26 md:pb-8">
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             <div>
               <Label className="text-foreground">{t("booking.name")}</Label>

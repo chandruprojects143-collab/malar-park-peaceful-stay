@@ -9,14 +9,14 @@ const Footer = () => {
     <div className="container mx-auto px-4 text-center">
       <p className="font-heading text-xl font-bold text-primary-foreground mb-2">Malar Park</p>
       <p className="text-primary-foreground/60 text-sm mb-4">{t("footer.tag")}</p>
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <Link
           to="/admin/login"
           className="inline-flex items-center gap-1 text-primary-foreground/40 text-xs hover:text-secondary transition-colors"
         >
           <Shield className="w-3 h-3" /> {t("footer.staff")}
         </Link>
-      </div>
+      </div> */}
       <p className="text-primary-foreground/40 text-xs">
         © {new Date().getFullYear()} Malar Park. {t("footer.rights")} |{" "}
         <a href="https://www.malarpark.com" className="hover:text-secondary transition-colors">www.malarpark.com</a>

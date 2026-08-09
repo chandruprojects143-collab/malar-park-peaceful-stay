@@ -10,13 +10,15 @@ export function useRooms(): DisplayRoom[] {
   const [rooms, setRooms] = useState<DisplayRoom[]>([]);
 
   useEffect(() => {
-    supabase
+    db
       .from('hotel_rooms')
       .select('number, type, description, rate')
       .order('number')
-      .then(({ data }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .then(({ data }: { data: any[] | null }) => {
         if (data && data.length > 0) {
-          setRooms(data.map(r => ({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setRooms(data.map((r: any) => ({
             name: `${r.type} Room #${r.number}`,
             desc: r.description ?? '',
             images: [],

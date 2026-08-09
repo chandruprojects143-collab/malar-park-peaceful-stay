@@ -9,6 +9,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabase as any;
+
 const statusColors: Record<RoomStatus, string> = {
   available: 'bg-green-500',
   occupied:  'bg-red-500',
@@ -37,7 +40,7 @@ const RoomStatusPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const fetchRooms = useCallback(async () => {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('hotel_rooms')
       .select('*')
       .order('number');
@@ -53,7 +56,7 @@ const RoomStatusPage = () => {
       if (room) { setEditRoom(room); setDialogOpen(true); }
       return;
     }
-    const { error } = await supabase
+    const { error } = await db
       .from('hotel_rooms')
       .update({ status, guest_name: null, checkout_date: null })
       .eq('id', roomId);
@@ -66,7 +69,7 @@ const RoomStatusPage = () => {
 
   const assignGuest = async () => {
     if (!editRoom || !guestName) return;
-    const { error } = await supabase
+    const { error } = await db
       .from('hotel_rooms')
       .update({ status: 'occupied', guest_name: guestName, checkout_date: checkoutDate || null })
       .eq('id', editRoom.id);

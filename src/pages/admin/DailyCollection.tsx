@@ -7,6 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabase as any;
+
 const today = new Date().toISOString().split('T')[0];
 const currentMonth = today.substring(0, 7);
 
@@ -32,7 +35,7 @@ const DailyCollection = () => {
   });
 
   const fetchCollections = useCallback(async () => {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('collections')
       .select('*')
       .order('created_at', { ascending: false });
@@ -44,7 +47,7 @@ const DailyCollection = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('collections')
       .insert({
         date,

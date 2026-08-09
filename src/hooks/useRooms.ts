@@ -3,6 +3,9 @@ import { useLocalStorage } from './useLocalStorage';
 import { DisplayRoom } from '@/components/RoomsSection';
 import { supabase } from '@/integrations/supabase/client';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabase as any;
+
 export function useRooms(): DisplayRoom[] {
   const [rooms, setRooms] = useState<DisplayRoom[]>([]);
 

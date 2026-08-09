@@ -193,14 +193,15 @@ var list_attractions_default = defineTool5({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ limit }) => {
     const supabase = supabaseAnon();
-    const { data, error } = await supabase.from("attractions").select("title, description, distance, sort").eq("enabled", true).order("sort").limit(limit ?? 50);
+    const { data, error } = await supabase.from("attractions").select("name, description, distance, maps_url, sort").eq("enabled", true).order("sort").limit(limit ?? 50);
     if (error) {
       return { content: [{ type: "text", text: error.message }], isError: true };
     }
     const attractions = (data ?? []).map((a) => ({
-      title: a.title,
+      name: a.name,
       description: a.description ?? "",
-      distance: a.distance ?? null
+      distance: a.distance ?? null,
+      mapsUrl: a.maps_url ?? null
     }));
     return {
       content: [{ type: "text", text: JSON.stringify(attractions, null, 2) }],

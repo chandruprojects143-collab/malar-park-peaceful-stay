@@ -21,7 +21,7 @@ export default defineTool({
     const supabase = supabaseAnon();
     const { data, error } = await supabase
       .from("attractions")
-      .select("title, description, distance, sort")
+      .select("name, description, distance, maps_url, sort")
       .eq("enabled", true)
       .order("sort")
       .limit(limit ?? 50);
@@ -31,9 +31,10 @@ export default defineTool({
     }
 
     const attractions = (data ?? []).map((a) => ({
-      title: a.title,
+      name: a.name,
       description: a.description ?? "",
       distance: a.distance ?? null,
+      mapsUrl: a.maps_url ?? null,
     }));
 
     return {

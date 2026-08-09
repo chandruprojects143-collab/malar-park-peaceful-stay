@@ -5,6 +5,9 @@ import { BedDouble, Camera, ImageIcon, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabase as any;
+
 const moduleItems = [
   { title: 'Room Management', url: '/admin/rooms', icon: BedDouble, module: 'rooms', color: 'text-emerald-600', bg: 'bg-emerald-50' },
   { title: 'Guest Reviews', url: '/admin/reviews', icon: Star, module: 'reviews', color: 'text-yellow-600', bg: 'bg-yellow-50' },
@@ -17,7 +20,7 @@ const Dashboard = () => {
   const [totalRooms, setTotalRooms] = useState(0);
 
   const fetchStats = useCallback(async () => {
-    const { data } = await supabase.from('hotel_rooms').select('id');
+    const { data } = await db.from('hotel_rooms').select('id');
     if (data) setTotalRooms(data.length);
   }, []);
 

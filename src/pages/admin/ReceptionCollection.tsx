@@ -11,6 +11,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from 'sonner';
 import { AlertCircle } from 'lucide-react';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabase as any;
+
 const today = new Date().toISOString().split('T')[0];
 const currentMonth = today.substring(0, 7);
 
@@ -45,8 +48,8 @@ const ReceptionCollection = () => {
 
   const fetchData = useCallback(async () => {
     const [bookingsRes, roomsRes] = await Promise.all([
-      supabase.from('bookings').select('*').order('created_at', { ascending: false }),
-      supabase.from('hotel_rooms').select('id, number, type, status, rate').order('number'),
+      db.from('bookings').select('*').order('created_at', { ascending: false }),
+      db.from('hotel_rooms').select('id, number, type, status, rate').order('number'),
     ]);
     if (bookingsRes.error) toast.error('Failed to load bookings');
     else setBookings((bookingsRes.data ?? []).map(bookingFromDb));
@@ -63,7 +66,7 @@ const ReceptionCollection = () => {
       return;
     }
     const balance = form.roomPrice - form.advance;
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('bookings')
       .insert({
         room_number:    form.roomNumber,

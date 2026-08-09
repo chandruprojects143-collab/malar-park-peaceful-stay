@@ -12,10 +12,16 @@ export interface Room {
   number: string;
   type: string;
   description?: string;
-  capacity: number;
-  amenities: string[];
+  capacity?: number;
+  amenities?: string[];
   status: RoomStatus;
   rate: number;
+  guestName?: string;
+  checkInDate?: string;
+  checkoutDate?: string;
+  advance?: number;
+  balance?: number;
+  paymentMethod?: string;
 }
 
 export type ExpenseCategory =
